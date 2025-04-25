@@ -170,8 +170,16 @@ class Contacto(db.Model):
 
 class Tarea(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.String(200), nullable=False)
+    titulo = db.Column(db.String(100), nullable=False)
     completada = db.Column(db.Boolean, default=False)
+
+class Version(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(100), nullable=False)
+    detalle1 = db.Column(db.String(200))
+    detalle2 = db.Column(db.String(200))
+    detalle3 = db.Column(db.String(200))
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow) # Importar datetime
 
 @login_manager.user_loader # Define una función para cargar el usuario desde la base de datos (Depende de User y db)
 def load_user(user_id):
@@ -211,24 +219,64 @@ def index():
 
     return render_template('index.html', posts_pagination=posts_pagination, title=title)
 
+
+
+
+
+# Context processor para pasar la última versión al footer
+@app.context_processor
+def inject_version():
+    latest_version = Version.query.order_by(Version.id.desc()).first()
+    return dict(latest_version=latest_version)
+
 # version
 @app.route('/version', methods=['GET', 'POST'])
 def version():
+    title ="Gestión de Tareas y Versiones"
     if request.method == 'POST':
         if 'titulo' in request.form:
-            titulo = request.form['titulo']
-            nueva_tarea = Tarea(titulo=titulo)
+            titulo_tarea = request.form['titulo']
+            nueva_tarea = Tarea(titulo=titulo_tarea)
             db.session.add(nueva_tarea)
             db.session.commit()
-            return redirect(url_for('version'))  # Redirigir después de agregar
+            return redirect(url_for('version'))
+        elif 'version' in request.form:
+            version_ingresada = request.form['version']
+            detalle1 = request.form.get('detalle1')
+            detalle2 = request.form.get('detalle2')
+            detalle3 = request.form.get('detalle3')
+            nueva_version = Version(titulo=version_ingresada, detalle1=detalle1, detalle2=detalle2, detalle3=detalle3)
+            db.session.add(nueva_version)
+            db.session.commit()
+            return redirect(url_for('version'))
 
     tareas = Tarea.query.all()
-    return render_template('version.html', tareas=tareas)
+    versiones = Version.query.order_by(Version.id.desc()).all()
+    return render_template('version.html', tareas=tareas, versiones=versiones,title=title)
 
 @app.route('/version/completar/<int:tarea_id>', methods=['POST'])
 def completar_tarea(tarea_id):
     tarea = Tarea.query.get_or_404(tarea_id)
     tarea.completada = not tarea.completada
+    db.session.commit()
+    return redirect(url_for('version'))
+
+@app.route('/version/editar/<int:version_id>', methods=['GET', 'POST'])
+def editar_version(version_id):
+    version = Version.query.get_or_404(version_id)
+    if request.method == 'POST':
+        version.titulo = request.form['version']
+        version.detalle1 = request.form.get('detalle1')
+        version.detalle2 = request.form.get('detalle2')
+        version.detalle3 = request.form.get('detalle3')
+        db.session.commit()
+        return redirect(url_for('version'))
+    return render_template('editar_version.html', version=version)
+
+@app.route('/version/borrar/<int:version_id>', methods=['POST'])
+def borrar_version(version_id):
+    version = Version.query.get_or_404(version_id)
+    db.session.delete(version)
     db.session.commit()
     return redirect(url_for('version'))
 
@@ -238,7 +286,7 @@ def borrar_tarea(tarea_id):
     db.session.delete(tarea)
     db.session.commit()
     return redirect(url_for('version'))
-# versionn
+# version
 
 
 

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h1>Editar Versión</h1>
+    <form method="POST" action="{{ url_for('editar_version', version_id=version.id) }}">
+        <div class="mb-3">
+            <label for="version" class="form-label">Versión:</label>
+            <input type="text" class="form-control" id="version" name="version" value="{{ version.titulo }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="detalle1" class="form-label">Detalles:</label>
+            <textarea rows="10" class="form-control" id="detalle1" name="detalle1">{{ version.detalle1 }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="{{ url_for('version') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
