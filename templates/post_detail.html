@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="tabs">
+    <ul>
+        <li class="is-active"><a href="#contenido">Caminata</a></li>
+        <li><a href="#autor">Instrucciones</a></li>
+        <li><a href="#acciones">Listas</a></li>
+    </ul>
+</div>
+
+<div id="contenido" class="tab-content">
+    <article class="post-container">
+
+
+        <section class="post-content columns">
+            <div class="column is-half">
+
+                <p>{{ post.title }}</p>
+
+                <p>{{ post.content }}</p>
+
+                {% if post.precio_colones %}
+                   <strong>Precio:</strong> ¢{{ post.precio_colones}}
+                {% endif %}
+
+                {% if post.image %}
+                    <figure class="image">
+                        <img src="{{ url_for('static', filename='images/' + post.image) }}" alt="{{ post.title }}">
+                    </figure>
+                {% endif %}
+            </div>
+            <div class="column is-half">
+                <ul class="list is-unordered">
+                    {% if post.fecha_salida %}
+                        <li><strong>Fecha de Salida:</strong> {{ post.fecha_salida.strftime('%d de %B de %Y') }}</li>
+                    {% endif %}
+                    {% if post.hora_salida %}
+                        <li><strong>Hora de Salida:</strong> {{ post.hora_salida.strftime('%H:%M') }}</li>
+                    {% endif %}
+                    {% if post.lugar_salida %}
+                        <li><strong>Lugar de Salida:</strong> {{ post.lugar_salida }}</li>
+                    {% endif %}
+                     
+                        {% if post.recogemos_en %}
+                           <strong>Puntos de Recogida:</strong>
+                            <li>{{ post.recogemos_en | replace('\n', '<br>') | safe }}</li>
+                            
+                        {% endif %}
+                        {% if post.tipoTerreno %}
+                            <li><strong>Tipo de Terreno:</strong>
+                            {{ post.tipoTerreno | replace('\n', '<br>') | safe }}</li>
+                        {% endif %}
+                 
+                    {% if post.dificultad %}
+                        <li><strong>Dificultad:</strong> {{ post.dificultad }}</li>
+                    {% endif %}
+                    {% if post.distancia %}
+                        <li><strong>Distancia:</strong> {{ post.distancia }} km</li>
+                    {% endif %}
+                    {% if post.capacidad_total %}
+                        <li><strong>Capacidad Total:</strong> {{ post.capacidad_total }} personas</li>
+                    {% endif %}
+                    {% if post.capacidad_buseta %}
+                        <li><strong>Capacidad Buseta:</strong> {{ post.capacidad_buseta }} personas</li>
+                    {% endif %}
+                    {% if post.requiere_estadía %}
+                        <li><strong>Requiere Estadía:</strong> {{ post.requiere_estadía }}</li>
+                    {% endif %}
+                    {% if post.animales %}
+                        <li><strong>Animales:</strong> {{ post.animales }}</li>
+                    {% endif %}
+                    {% if post.duchas %}
+                        <li><strong>Duchas:</strong> {{ post.duchas }}</li>
+                    {% endif %}
+                    {% if post.banos %}
+                        <li><strong>Baños:</strong> {{ post.banos }}</li>
+                    {% endif %}
+                    {% if post.bastones %}
+                        <li><strong>Bastones:</strong> {{ post.bastones }}</li>
+                    {% endif %}
+                    {% if post.guantes %}
+                        <li><strong>Guantes:</strong> {{ post.guantes }}</li>
+                    {% endif %}
+                    {% if post.tipo_calzado %}
+                        <li><strong>Tipo de Calzado:</strong> {{ post.tipo_calzado }}</li>
+                    {% endif %}
+                    {% if post.repelente %}
+                        <li><strong>Repelente:</strong> {{ post.repelente }}</li>
+                    {% endif %}
+                    {% if post.bloqueador %}
+                        <li><strong>Bloqueador:</strong> {{ post.bloqueador }}</li>
+                    {% endif %}
+                    {% if post.liquido %}
+                        <li><strong>Líquido:</strong> {{ post.liquido }}</li>
+                    {% endif %}
+                    {% if post.snacks %}
+                        <li><strong>Snacks:</strong> {{ post.snacks }}</li>
+                    {% endif %}
+                    {% if post.ropa_cambio %}
+                        <li><strong>Ropa de Cambio:</strong> {{ post.ropa_cambio }}</li>
+                    {% endif %}
+                    {% if current_user.is_authenticated and current_user.id == post.user_id %}
+                        <li>
+                            <section class="post-actions">
+                                <a href="{{ url_for('edit_post', post_id=post.id) }}" class="button is-primary">Editar</a>
+                                <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit" class="button is-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar esta publicación?')">Borrar</button>
+                                </form>
+                            </section>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </section>
+    </article>
+</div>
+
+<div id="detalles" class="tab-content">
+    <article class="post-container">
+        <header>
+            <h2 class="subtitle">Detalles Adicionales</h2>
+        </header>
+    </article>
+</div>
+
+<div id="autor" class="tab-content">
+    <article class="post-container">
+        <header>
+            <h2 class="subtitle">Información del Autor</h2>
+        </header>
+        <section class="post-content">
+            <p>Publicado por: {{ post.author.name }} {{ post.author.first_last_name }} {{ post.author.second_last_name }}</p>
+            <p>Email del autor: {{ post.user_email }}</p>
+            <p>Fecha de publicación: {{ post.date_posted.strftime('%d de %B de %Y a las %H:%M') }}</p>
+            {% if post.author.avatar %}
+                <figure class="image is-64x64">
+                    <img class="is-rounded" src="{{ url_for('static', filename='images/' + post.author.avatar) }}" alt="Avatar de {{ post.author.name }}">
+                </figure>
+            {% endif %}
+        </section>
+    </article>
+</div>
+
+<div id="acciones" class="tab-content">
+    <article class="post-container">
+        <header>
+            <h2 class="subtitle">Listas</h2>
+        </header>
+        <section class="post-content">
+            <p>Aquí van las listas relacionadas con la caminata.</p>
+            </section>
+    </article>
+</div>
+
+<style>
+    .post-container {
+        max-width: 900px; /* Aumentar el ancho máximo para acomodar la lista */
+        margin: 20px auto;
+        padding: 20px;
+        border: none;
+        border-radius: 0;
+        background-color: transparent;
+        box-shadow: none;
+    }
+
+    .post-content.columns {
+        display: flex; /* Usar flexbox para alinear imagen y lista */
+        flex-wrap: wrap; /* Permitir que las columnas se envuelvan en pantallas pequeñas */
+    }
+
+    .post-content .column.is-half {
+        flex: 1; /* Cada columna ocupa la misma proporción de espacio */
+        min-width: 300px; /* Ancho mínimo para evitar que se colapsen */
+        padding: 10px;
+    }
+
+    .post-image {
+        max-width: 100%;
+        height: auto;
+        margin-top: 10px;
+    }
+
+    .post-actions {
+        margin-top: 20px;
+    }
+
+    .tabs {
+        margin-bottom: 1em;
+    }
+
+    .tab-content {
+        display: none;
+        padding: 1em;
+        border: none;
+        border-top: none;
+        border-radius: 0;
+    }
+
+    .tab-content:first-child {
+        display: block;
+    }
+
+    .list.is-unordered {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .list.is-unordered li {
+        padding: 5px 0;
+        border-bottom: 1px solid #eee; /* Separador visual entre elementos */
+    }
+
+    .list.is-unordered li:last-child {
+        border-bottom: none; /* No mostrar separador en el último elemento */
+    }
+
+    .list.is-unordered strong {
+        font-weight: bold;
+        margin-right: 0.5em;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.tabs a');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        const activateTab = (tabId) => {
+            tabs.forEach(tab => {
+                tab.parentNode.classList.remove('is-active');
+                if (tab.getAttribute('href') === `#${tabId}`) {
+                    tab.parentNode.classList.add('is-active');
+                }
+            });
+
+            tabContents.forEach(content => {
+                content.style.display = 'none';
+                if (content.getAttribute('id') === tabId) {
+                    content.style.display = 'block';
+                }
+            });
+        };
+
+        if (tabs.length > 0 && tabContents.length > 0) {
+            activateTab('contenido');
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (event) => {
+                event.preventDefault();
+                const targetId = tab.getAttribute('href').substring(1);
+                activateTab(targetId);
+            });
+        });
+    });
+</script>
+{%endblock%}

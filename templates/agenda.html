@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h1>Directorio de Contactos</h1>
+    <form method="POST" action="{{ url_for('agenda') }}" class="mb-4" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="nombre" class="form-label">Nombre:</label>
+                <input type="text" name="nombre" id="nombre" class="form-control" required>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="apellido1" class="form-label">Primer Apellido:</label>
+                <input type="text" name="apellido1" id="apellido1" class="form-control" required>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="apellido2" class="form-label">Segundo Apellido:</label>
+                <input type="text" name="apellido2" id="apellido2" class="form-control" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" name="email" id="email" class="form-control">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="telefono" class="form-label">Teléfono:</label>
+                <input type="tel" name="telefono" id="telefono" class="form-control" minlength="8" maxlength="8" onkeyup="limpiarNumero(this)" onchange="limpiarNumero(this)">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="celular" class="form-label">Celular:</label>
+                <input type="tel" name="celular" id="celular" class="form-control" minlength="8" maxlength="8" onkeyup="limpiarNumero(this)" onchange="limpiarNumero(this)">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="empresa" class="form-label">Empresa:</label>
+                <input type="text" name="empresa" id="empresa" class="form-control">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="categoria" class="form-label">Categoría:</label>
+                <select name="categoria" id="categoria" class="form-control">
+                    <option value="CAMINANTE">CAMINANTE</option>
+                    <option value="TRANSPORTE">TRANSPORTE</option>
+                    <option value="GUIA">GUIA</option>
+                    <option value="MARITIMO">MARITIMO</option>
+                    <option value="RESTAURANTE">RESTAURANTE</option>
+                    <option value="SALUD">SALUD</option>
+                    <option value="ESTANCIA">ESTANCIA</option>
+                    <option value="COORDINADOR">COORDINADOR</option>
+                    <option value="OTRO">OTRO</option>
+                </select>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="avatar" class="form-label">Avatar:</label>
+            <input type="file" name="avatar" id="avatar" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Contacto</button>
+    </form>
+
+    <h2>Lista de Contactos</h2>
+    <p>Total de contactos: {{ cantidad_contactos }}</p>
+
+    <div class="row">
+        {% for contacto in contactos %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="text-center">
+                    {% if contacto.avatar %}
+                        {% if contacto.avatar.startswith('uploads/') %}
+                            <img src="/{{ contacto.avatar }}" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; padding: 20px;" alt="Avatar de {{ contacto.nombre }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename=contacto.avatar) }}" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; padding: 20px;" alt="Avatar de {{ contacto.nombre }}">
+                        {% endif %}
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/default.png') }}" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; padding: 20px;" alt="Avatar Predeterminado">
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title text-center"> {{ contacto.nombre | title }} {{ contacto.apellido1 | title }} {{ contacto.apellido2 | title }}</h5>
+                    <hr>
+                    <p class="card-text">
+                        <strong>Email:</strong> {{ contacto.email | title }}<br>
+                        <strong>Teléfono:</strong> {{ contacto.telefono | title }}<br>
+                        <strong>Celular:</strong> {{ contacto.celular | title }}<br>
+                        <strong>Empresa:</strong> {{ contacto.empresa | title }}<br>
+                        <strong>Categoría:</strong> {{ contacto.categoria | title }}
+                    </p>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('editar_contacto', contacto_id=contacto.id) }}" class="btn btn-sm btn-primary">Editar</a>
+                        <form method="POST" action="{{ url_for('borrar_contacto', contacto_id=contacto.id) }}" style="display: inline;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de que quieres borrar este contacto?')">Borrar</button>
+                        </form>
+                        <a href="{{ url_for('contacto_vcard', contacto_id=contacto.id) }}" class="btn btn-sm btn-success"><span class="icon-share2"></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

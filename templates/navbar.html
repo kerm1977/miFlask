@@ -1,0 +1,193 @@
+<style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: orange !important;
+        }
+
+        .navbar-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .navbar-nav .nav-link {
+            color: black !important;
+            font-size: 1.2em;
+            margin-left: 1.5em;
+            padding-left: 1.5em;
+            border-left: 1px solid #ffbb33;
+            box-sizing: border-box;
+            text-decoration: none !important;
+            display: block;
+        }
+
+        .navbar-nav .nav-item:first-child .nav-link {
+            border-left: none;
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        /* Estilos para pantallas más pequeñas (móvil) */
+        @media (max-width: 991.98px) {
+            .navbar-brand {
+                font-size: 1.3em;
+            }
+            .navbar-toggler {
+                border: none !important;
+            }
+            .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(0, 0, 0, 0.7)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            }
+            .navbar-collapse {
+                background-color: orange !important;
+                padding: 10px;
+                border-radius: 5px;
+                margin-top: 5px;
+            }
+            .navbar-nav {
+                padding-top: 0;
+            }
+            .navbar-nav .nav-item {
+                width: 100%;
+                border-bottom: 1px solid #ffbb33;
+                margin-bottom: 0;
+            }
+            .navbar-nav .nav-item:last-child {
+                border-bottom: none;
+            }
+            .navbar-nav .nav-item .nav-link {
+                border-left: none !important;
+                padding: 0.75rem 1rem !important;
+                margin-left: 0;
+                font-size: 1em;
+            }
+        }
+
+        /* Estilos para pantallas medianas (desde 992px hasta 1299px) */
+        @media (min-width: 992px) and (max-width: 1299.98px) {
+            .navbar-expand-lg .navbar-collapse {
+                display: flex !important;
+                justify-content: flex-end;
+            }
+            .navbar-nav {
+                flex-direction: row !important;
+            }
+            .navbar-nav .nav-item {
+                border-bottom: none !important;
+            }
+            .navbar-nav .nav-item .nav-link {
+                margin-right: 0;
+                padding-right: 0;
+                border-right: none;
+                padding-bottom: 0 !important;
+                margin-bottom: 0 !important;
+                margin-left: 1.5em;
+                padding-left: 1.5em;
+                border-left: 1px solid #ffbb33;
+                font-size: 1.1em; /* Reduce ligeramente la fuente en pantallas medianas */
+                margin-left: 1em; /* Reduce ligeramente el margen izquierdo */
+                padding-left: 1em; /* Reduce ligeramente el padding izquierdo */
+            }
+            .navbar-nav .nav-item:first-child .nav-link {
+                border-left: none;
+                margin-left: 0;
+                padding-left: 0;
+            }
+        }
+
+        /* Estilos para pantallas grandes (desde 1300px en adelante) */
+        @media (min-width: 1300px) {
+            .navbar-expand-lg .navbar-collapse {
+                display: flex !important;
+                justify-content: flex-end;
+            }
+            .navbar-nav {
+                flex-direction: row !important;
+            }
+            .navbar-nav .nav-item {
+                border-bottom: none !important;
+            }
+            .navbar-nav .nav-item .nav-link {
+                margin-right: 0;
+                padding-right: 0;
+                border-right: none;
+                padding-bottom: 0 !important;
+                margin-bottom: 0 !important;
+                margin-left: 1em; /* Reduce el margen izquierdo para pantallas grandes */
+                padding-left: 1em; /* Reduce el padding izquierdo para pantallas grandes */
+                border-left: 1px solid #ffbb33;
+                font-size: 1.1em; /* Reduce ligeramente la fuente para pantallas grandes */
+            }
+            .navbar-nav .nav-item:first-child .nav-link {
+                border-left: none;
+                margin-left: 0;
+                padding-left: 0;
+            }
+        }
+    </style>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: orange;">
+    <div class="container">
+        <a class="navbar-brand" href="#" style="font-size: 1.5em;">LA TRIBU</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://gemini.google.com/app?hl=es_419 ">Gemini</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://www.pythonanywhere.com/user/kenth1977/">pythonAnywhere</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('archivos') }}">Archivos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('new_post') }}">Crear Post</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('create_vids') }}">Agregar Video</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('videos') }}">Videos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('perfil') }}">Cuenta</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Salir</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('videos') }}">Videos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">Entrar</a>
+                </li>
+                {% endif %}
+                {% if tipo_compra and tipo_venta %}
+                <li class="nav-item">
+                    <span class="nav-link">Compra: {{ tipo_compra }}</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link">Venta: {{ tipo_venta }}</span>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

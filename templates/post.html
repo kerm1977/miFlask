@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="post-card">
+        {% if post.image %}
+            <img src="{{ url_for('static', filename='images/' + post.image) }}" alt="{{ post.title }}">
+        {% endif %}
+        <div class="post-content">
+            <h3 class="post-title">{{ post.title }}</h3>
+            <strong>Precio:</strong> ¢{{post.precio_colones}}
+
+            <div class="actions">
+                <a href="{{ url_for('edit_post', post_id=post.id) }}" class="action-button edit-button">Editar</a>
+                <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST">
+                    <button type="submit" class="action-button delete-button">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

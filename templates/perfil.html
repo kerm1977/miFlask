@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    border-radius: 5px;
+    position: relative;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.profile-avatar-container {
+    display: flex;
+    justify-content: center; /* Center the avatar horizontally */
+    margin-bottom: 1rem; /* Keep some space below */
+    background-color: #f0f0f0; /* Light grey background */
+    padding: 10px; /* Add some padding around the avatar */
+    border-radius: 50%; /* Make the container round as well */
+    width: 120px; /* Slightly larger to accommodate padding */
+    height: 120px;
+    align-items: center; /* Center vertically within the container */
+    margin-left: auto; /* Add auto margins for centering */
+    margin-right: auto;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Media query for mobile devices (example: max-width 768px) */
+@media (max-width: 768px) {
+    .profile-avatar-container {
+        width: 100px; /* Adjust size for smaller screens */
+        height: 100px;
+        padding: 8px; /* Adjust padding for smaller screens */
+    }
+
+    .profile-avatar {
+        width: 84px; /* Adjust avatar size within the container */
+        height: 84px;
+    }
+}
+</style>
+
+<div class="container is-fluid">
+    <div class="main-title">
+        <h1>{{ titulo }}</h1>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-two-thirds">
+                <div class="card" style="box-shadow: none;">
+                    <div class="card-content has-text-centered">
+                        <h3 class="title is-3 mb-4">Mi Cuenta</h3>
+
+                        <div class="profile-avatar-container">
+                            <div class="profile-avatar">
+                                {% if usuario.avatar %}
+                                <img id="avatar-small" class="img-fluid" src="{{ url_for('static', filename='images/' + usuario.avatar) }}" alt="Avatar de {{ usuario.name }}">
+                                {% else %}
+                                <img id="avatar-small" class="img-fluid" src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="Avatar por defecto">
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="profile-details mt-4">
+                            <p><strong>Nombre:</strong> {{ usuario.name }}</p>
+                            <p><strong>Primer Apellido:</strong> {{ usuario.first_last_name }}</p>
+                            <p><strong>Segundo Apellido:</strong> {{ usuario.second_last_name }}</p>
+                            <p><strong>Teléfono:</strong> {{ usuario.phone_number }}</p>
+                            <p><strong>Email:</strong> {{ usuario.email }}</p>
+                        </div>
+
+                        <hr class="my-5">
+
+                        <div class="buttons is-centered">
+                            <a class="button is-success is-outlined" href="{{ url_for('actualizar_usuario', user_id=usuario.id) }}">
+                                <span class="icon"><span class="icon-pencil2"></span></span>
+                                <span>Editar Perfil</span>
+                            </a>
+                            <a class="button is-warning is-outlined" href="{{ url_for('actualizar_avatar') }}">
+                                <span class="icon"><span class="icon-image"></span></span>
+                                <span>Cambiar Avatar</span>
+                            </a>
+                            <a class="button is-info is-outlined" href="{{ url_for('agenda') }}">
+                                <span class="icon"><span class="icon-address-book"></span></span>
+                                <span>Mi Agenda</span>
+                            </a>
+                            <a class="button is-link is-outlined" href="{{ url_for('users') }}">
+                                <span class="icon"><span class="icon-users"></span></span>
+                                <span>Otros Usuarios</span>
+                            </a>
+                        </div>
+
+                        <hr class="my-5">
+
+                        <div class="buttons is-centered">
+                            <a class="button is-danger" href="{{ url_for('logout') }}">
+                                <span class="icon"><span class="icon-switch"></span></span>
+                                <span>Cerrar Sesión</span>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div id="imageModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <img id="modal-image" class="modal-image">
+    </div>
+</div>
+
+<script>
+// Get the modal
+var modal = document.getElementById("imageModal");
+
+// Get the image and insert it inside the modal - use its "alt" text as a caption
+var img = document.getElementById("avatar-small");
+var modalImg = document.getElementById("modal-image");
+var closeBtn = document.querySelector(".close-button");
+
+img.onclick = function(){
+    modal.style.display = "block";
+    modalImg.src = this.src;
+}
+
+closeBtn.onclick = function() {
+    modal.style.display = "none";
+}
+
+// Close the modal if the user clicks outside of it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+{% endblock %}

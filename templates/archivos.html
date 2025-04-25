@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+    <style>
+    .card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        box-shadow: none; /* Elimina la sombra */
+        border: 1px solid #dee2e6; /* Opcional: agrega un borde para definir los cards */
+    }
+    .card-body {
+        display: flex;
+        flex-direction: column;
+    }
+    .card-actions {
+        margin-top: auto;
+        display: flex;
+    }
+    .card-actions a {
+        flex-grow: 1;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1>Gestión de Archivos</h1>
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+    {% if mensajes %}
+        {% for categoria, mensaje in mensajes %}
+            <div class="mensaje {{ categoria }} {{ categoria }}">
+                {{ mensaje }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        {% for item in archivos %}
+            {% if item.es_imagen %}
+                <div class="col-md-2 mb-4">
+                    <div class="card">
+                        <img src="{{ url_for('uploaded_file', filename=item.nombre_archivo) }}" class="card-img-top" alt="Imagen Subida">
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate">{{ item.nombre_archivo }}</h5>
+                            {% if item.usuario %}
+                                <img src="{{ item.usuario.avatar }}" alt="Avatar" class="avatar">
+                            {% endif %}
+                            <hr>
+                            <div class="card-actions">
+                                <a href="{{ url_for('borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-danger">Borrar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <h2 class="mt-4">Subir Nuevo Archivo</h2>
+    <form action="{{ url_for('subir') }}" method="post" enctype="multipart/form-data" id="miFormulario">
+        <label for="miArchivo">Selecciona un archivo:</label>
+        <input type="file" name="miArchivo" id="miArchivo">
+        <br><br>
+        <button type="submit" id="miBoton">Enviar</button>
+    </form>
+</div>
+
+{% endblock %}

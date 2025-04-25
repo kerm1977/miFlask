@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+    max-width: 600px;
+  }
+
+  .profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    border: 3px solid #007bff;
+  }
+
+  .profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .form-container {
+    width: 100%;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+  }
+
+  .form-button {
+    background-color: #007bff;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .form-button:hover {
+    background-color: #0056b3;
+  }
+
+  .file-input-container {
+    width: 100%;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  .file-input-label {
+    color: #007bff;
+    font-weight: 600;
+  }
+
+  .file-name {
+    margin-top: 0.5rem;
+    color: #555;
+  }
+
+  .main-title {
+    text-align: center;
+    margin: 2rem 0;
+  }
+
+  .main-title h1 {
+    font-size: 2.5rem;
+    color: #333;
+  }
+</style>
+
+<div class="container is-fluid">
+    <div class="main-title">
+        <h1>Actualizar Avatar</h1>
+    </div>
+</div>
+
+<div class="profile-container">
+    {% if current_avatar %}
+    <div class="profile-avatar">
+      <img src="{{ url_for('static', filename='images/' + current_avatar) }}" alt="Avatar actual">    
+    </div>
+    {% endif %}
+
+   
+
+    <div class="form-container">
+        <form method="post" enctype="multipart/form-data" id="avatar-form">
+            <div class="field">
+                <label class="form-label">Selecciona un Avatar:</label>
+                <div class="file-input-container">
+                    <input class="file-input" type="file" name="avatar" id="file-input">
+                    <label for="file-input" class="file-input-label">Selecciona un avatar</label>
+                    <span class="file-name" id="file-name">Agrega</span>
+                </div>
+                <p id="file-error" style="color: red; display: none;">Por favor, selecciona un archivo.</p>
+            </div>
+
+            <div class="field">
+                <button class="form-button" type="submit">Actualizar Avatar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('avatar-form');
+    const fileInput = document.getElementById('file-input');
+    const fileError = document.getElementById('file-error');
+    const fileNameDisplay = document.getElementById('file-name');
+
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            fileNameDisplay.textContent = this.files[0].name;
+            fileError.style.display = 'none'; // ocultar error si existe archivo
+        } else {
+            fileNameDisplay.textContent = 'No file uploaded';
+        }
+    });
+
+    form.addEventListener('submit', function(event) {
+        if (fileInput.files.length === 0) {
+            event.preventDefault(); // evitar que se envie el formulario
+            fileError.style.display = 'block'; // mostrar error
+        }
+    });
+</script>
+
+
+{% endblock %}

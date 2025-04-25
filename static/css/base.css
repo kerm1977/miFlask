@@ -1,0 +1,116 @@
+body {
+    background-color: {% if dark_mode %} #333 {% else %} #fff {% endif %};
+    color: {% if dark_mode %} #fff {% else %} #000 {% endif %};
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Asegura que el body ocupe al menos el 100% de la altura de la ventana */
+    margin: 0; /* Elimina márgenes predeterminados */
+}
+
+main {
+    flex-grow: 1; /* Permite que el main ocupe el espacio disponible */
+    /* Otros estilos para main */
+}
+
+.flex_container {
+    /*background-color:red;*/
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.no-shadow {
+    box-shadow: none !important;
+}
+
+.search_video {
+    margin-bottom: 100px;
+}
+
+* p {
+    font-family: Helvetica, "Trebuchet MS", Verdana, sans-serif;
+    font-weight: 100 !important;
+    font-style: lighter !important;
+    font-size: 16px;
+}
+
+.main-title {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    font-family: ronda !important;
+}
+
+.Form_container {
+    margin: auto;
+    width: 300px;
+}
+
+.icon-heart {
+    color: red;
+}
+
+.card-info {
+    width: 80%;
+    margin: auto;
+}
+
+/*ESTE ES EL CONTENIDO DE LOS PLACEHOLDER*/
+/*------------------------------------------*/
+::placeholder {
+    color: #FFA07A !important;
+    font-size: 15px;
+    text-transform: capitalize;
+    opacity: 0.6;
+}
+/*------------------------------------------*/
+
+.input.is-rounded:focus {
+    outline: none !important;
+    border: none;
+}
+
+.search_video:focus {
+    outline: none !important;
+    border: none;
+}
+
+/*COMPARTIR VIDEO*/
+.share-buttons {
+    margin-top: 10px;
+}
+
+.share-buttons a {
+    margin-right: 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+}
+
+.share-buttons a:hover {
+    background-color: #f0f0f0;
+}
+
+/*COMPARTIR VIDEO*/
+
+/*footer*/
+/* Elimina la duplicación de estilos en el body */
+/* Elimina .content-wrapper si no es necesario */
+
+@media only screen and (max-width: 768px) {
+    /* Elimina la duplicación de estilos en el body */
+    /* Elimina .content-wrapper si no es necesario */
+}
+
+/*footer*/
+
+/*botones de borrado*/
+@media screen and (max-width: 768px) {
+    .mobile-left {
+        margin-left: 0;
+        margin-right: auto;
+    }
+}
+/*botones de borrado*/

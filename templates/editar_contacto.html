@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h1>Editar Contacto</h1>
+
+   
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('editar_contacto', contacto_id=contacto.id) }}" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input type="text" name="nombre" value="{{ contacto.nombre }}" required class="form-control" onkeyup="evitarNumeros(this)" onchange="evitarNumeros(this)">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="apellido1" class="form-label">Primer Apellido:</label>
+                        <input type="text" name="apellido1" value="{{ contacto.apellido1 }}" required class="form-control" onkeyup="evitarNumeros(this)" onchange="evitarNumeros(this)">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="apellido2" class="form-label">Segundo Apellido:</label>
+                        <input type="text" name="apellido2" value="{{ contacto.apellido2 }}" required class="form-control" onkeyup="evitarNumeros(this)" onchange="evitarNumeros(this)">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="email" name="email" value="{{ contacto.email }}" class="form-control">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="telefono" class="form-label">Teléfono:</label>
+                        <input type="tel" name="telefono" value="{{ contacto.telefono }}" class="form-control" minlength="8" maxlength="8" onkeyup="limpiarNumero(this)" onchange="limpiarNumero(this)">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="celular" class="form-label">Celular:</label>
+                        <input type="tel" name="celular" value="{{ contacto.celular }}" class="form-control" minlength="8" maxlength="8" onkeyup="limpiarNumero(this)" onchange="limpiarNumero(this)">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="empresa" class="form-label">Empresa:</label>
+                        <input type="text" name="empresa" value="{{ contacto.empresa }}" class="form-control">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="categoria" class="form-label">Categoría:</label>
+                        <select name="categoria" class="form-control">
+                            <option value="CAMINANTE" {% if contacto.categoria == "CAMINANTE" %}selected{% endif %}>CAMINANTE</option>
+                            <option value="TRANSPORTE" {% if contacto.categoria == "TRANSPORTE" %}selected{% endif %}>TRANSPORTE</option>
+                            <option value="GUIA" {% if contacto.categoria == "GUIA" %}selected{% endif %}>GUIA</option>
+                            <option value="MARITIMO" {% if contacto.categoria == "MARITIMO" %}selected{% endif %}>MARITIMO</option>
+                            <option value="RESTAURANTE" {% if contacto.categoria == "RESTAURANTE" %}selected{% endif %}>RESTAURANTE</option>
+                            <option value="SALUD" {% if contacto.categoria == "SALUD" %}selected{% endif %}>SALUD</option>
+                            <option value="ESTANCIA" {% if contacto.categoria == "ESTANCIA" %}selected{% endif %}>ESTANCIA</option>
+                            <option value="COORDINADOR" {% if contacto.categoria == "COORDINADOR" %}selected{% endif %}>COORDINADOR</option>
+                            <option value="OTRO" {% if contacto.categoria == "OTRO" %}selected{% endif %}>OTRO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="avatar" class="form-label">Avatar:</label>
+                    <input type="file" name="avatar" id="avatar" class="form-control">
+                </div> 
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

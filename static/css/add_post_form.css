@@ -1,0 +1,16 @@
+.add_post_form{
+	display: flex;
+	margin: auto;
+	width: 800px;
+}
+
+
+
+ @media (max-width: 768px) {
+ 	.add_post_form{
+		display: flex;
+		margin: auto;
+		width: auto;
+	}
+}
+

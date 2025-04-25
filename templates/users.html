@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .agenda-section {
+    padding: 2rem;
+    font-family: sans-serif;
+  }
+
+  .agenda-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 1rem;
+  }
+
+  .search-box {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .search-input {
+    width: 100px;
+  }
+
+  .user-count {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 1rem;
+  }
+
+  .letter-group {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+  }
+
+  .letter-title {
+    font-size: 1.7rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between; /* Alinea la letra y el avatar */
+    align-items: center; /* Centra verticalmente */
+  }
+
+  .letter-avatar img {
+    width: 50px; /* Tamaño del avatar */
+    height: 50px;
+    border-radius: 50%; /* Hace el avatar circular */
+  }
+
+  .user-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .user-item {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+  }
+
+  .user-item li {
+    margin-bottom: 0.5rem;
+  }
+
+  .user-item li:last-child {
+    margin-bottom: 0;
+  }
+
+  .back-button {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .back-button a {
+    background-color: #007bff;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+  }
+</style>
+
+<section class="agenda-section">
+    <div class="container is-fluid">
+        <div class="agenda-title">
+            <h1 class="title">{{ titulo }}</h1>
+        </div>
+
+        <div class="search-box">
+            <form method="GET" action="{{ url_for('users') }}">
+                <div class="field has-addons">
+                    <div class="control is-expanded">
+                        <input class="input is-large is-rounded" type="text" id="search" name="search" value="{{ search_term or '' }}">
+                    </div>
+                    <div class="control">
+                        <button class="button is-warning is-large" type="submit">Buscar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="user-count">
+            <p>Total de usuarios: {{ user_count }}</p>
+        </div>
+
+        {% for letter, users in users_by_letter.items() %}
+        <div class="letter-group" style="position: relative;">
+            <h3 class="letter-title">
+                {{ letter }}
+            </h3>
+            {% if users|length > 0 and users[0].avatar %}
+            <div class="letter-avatar" style="position: absolute; top: 10px; right: 10px;">
+                <img src="{{ url_for('uploaded_file', filename=users[0].avatar.split('/')[-1]) }}" alt="Avatar">
+            </div>
+            {% endif %}
+            <ul class="user-list">
+                {% for user in users %}
+                <li class="user-item">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <ul>
+                                <li><strong>Nombre:</strong> {{ user.name|title }}</li>
+                                <li><strong>Primer Apellido:</strong> {{ user.first_last_name|title }}</li>
+                                <li><strong>Segundo Apellido:</strong> {{ user.second_last_name|title }}</li>
+                                <li><strong>Teléfono:</strong> {{ user.phone_number }}</li>
+                                <li><strong>Email:</strong> {{ user.email|lower }}</li>
+                                <li><strong>Número de registros:</strong> {{ user.registration_count }}</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('editar_usuario', usuario_id=user.id) }}" class="button is-info">Editar</a>
+                            <form method="POST" action="{{ url_for('eliminar_usuario', usuario_id=user.id) }}" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
+                                <button type="submit" class="button is-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+
+        <div class="back-button">
+            <a href="/perfil">Volver a Perfil</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

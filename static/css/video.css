@@ -1,0 +1,67 @@
+body {
+    font-family: 'Roboto', sans-serif; /* Fuente similar a la de YouTube */
+    background-color: #f9f9f9; /* Fondo gris claro */
+}
+
+.video-card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.video-thumbnail {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+}
+
+.video-thumbnail img {
+    width: 100%;
+    display: block;
+    transition: transform 0.3s ease-in-out;
+}
+
+.video-thumbnail a:hover img {
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #0f0f0f; /* Color de texto principal */
+}
+
+.card-text {
+    color: #606060; /* Color de texto secundario */
+    font-size: 0.9rem;
+}
+
+.social-share a {
+    text-decoration: none;
+    margin-right: 0.5rem;
+}
+
+.card-actions a,
+.card-actions button {
+    margin-left: 0.5rem;
+}
+
+.btn-danger {
+    background-color: #cc0000; /* Rojo de YouTube */
+    border-color: #cc0000;
+}
+
+.btn-danger:hover {
+    background-color: #aa0000;
+    border-color: #aa0000;
+}
+
+/* Estilos para el "No Thumbnail" */
+.no-thumbnail {
+    border-radius: 8px 8px 0 0;
+}

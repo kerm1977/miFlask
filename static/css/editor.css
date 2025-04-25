@@ -1,0 +1,25 @@
+.editor-container {
+    width: 80%;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.toolbar {
+    margin-bottom: 10px; /* Incrementa el margen inferior para más espacio */
+    padding: 5px; /* Añade padding para espaciar los botones del borde */
+}
+
+.toolbar button {
+    margin: 5px; /* Añade margen a los botones para separarlos */
+    padding: 8px 12px; /* Ajusta el padding de los botones para mayor tamaño */
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+#editor {
+    border: 1px solid #ddd;
+    padding: 10px; /* Incrementa el padding para mayor espacio */
+    min-height: 250px; /* Incrementa la altura mínima para mayor espacio */
+}

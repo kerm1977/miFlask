@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="section no-shadow">
+    <div class="container ">
+        <h1 class="title has-text-centered">{{ titulo }}</h1>
+        <div class="columns is-centered is-multiline"> <div class="column is-half-tablet is-one-third-desktop"> <div class="box no-shadow">
+                    <p class="has-text-centered">Registro | <a href="{{ url_for('login') }}">Login</a></p>
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="field">
+                            <label class="label">Nombre</label>
+                            <div class="control">
+                                <input class="input" type="text" name="nombre" placeholder="Nombre" onkeyup="evitarNumeros(this)" onchange="evitarNumeros(this)" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Primer Apellido</label>
+                            <div class="control">
+                                <input class="input" type="text" name="apellido1" placeholder="Primer Apellido" onkeyup="evitarNumeros(this)" onchange="evitarNumeros(this)" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Segundo Apellido</label>
+                            <div class="control">
+                                <input class="input" type="text" name="apellido2" placeholder="Segundo Apellido" onkeyup="evitarNumeros(this)" onchange="evitarNumeros(this)" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Email</label>
+                            <div class="control">
+                                <input class="input" type="email" name="email" placeholder="Email" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Teléfono</label>
+                            <div class="control">
+                                <input class="input" type="tel" name="telefono" placeholder="Teléfono"  id="txtNumero"
+                            minlength="8" maxlength="8" onkeyup="limpiarNumero(this)" onchange="limpiarNumero(this)">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Contraseña</label>
+                            <div class="control">
+                                <input class="input" type="password" name="password" id="password" placeholder="Contraseña" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Confirmar Contraseña</label>
+                            <div class="control">
+                                <input class="input" type="password" name="confirmar_password" id="confirmar_password" placeholder="Confirmar Contraseña" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="checkbox">
+                                    <input type="checkbox" onclick="mostrarContraseña()"> Mostrar Contraseña
+                                </label>
+                            </div>
+                        </div>
+                        <!-- <div class="field">
+                            <label class="label">Avatar</label>
+                            <div class="control">
+                                <div class="file is-boxed">
+                                    <label class="file-label">
+                                        <input class="file-input" type="file" name="avatar">
+                                        <span class="file-cta">
+                                            <span class="file-icon">
+                                                <span class="icon-cloud-upload"></span>
+                                            </span>
+                                            <span class="file-label">
+                                                Seleccionar archivo…
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div> -->
+                        <div class="field">
+                            <div class="control">
+                                <button class="button is-primary" type="submit">Registrarse</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="column is-half-tablet is-one-third-desktop"> 
+                
+                <h2 class="title is-4 has-text-centered is-warning">Datos de Privacidad</h2>
+            
+                <hr>
+                <div class="content"> <p class="is-size-5 has-text-black-ter mt-5">¿Por qué necesito registrarme para ver el contenido?</p>
+                    <p class="has-text-justified has-text-grey mt-5">El grupo de La Tribu Hiking a pesar de ser un grupo abierto para tod@s y es decisión de cada quien participar libremente sea en esta o demás agrupaciones, intentamos conocer a las personas que van a integrar nuestra familia, con el fin de mantener el orden en el clima, armonía y un ambiente libre de negativismo.</p>
+                    <p class="is-size-5 has-text-black-ter mt-5">¿Qué debo hacer para formar parte de La Tribu Hiking?</p>
+                    <p class="has-text-justified has-text-grey mt-5">Puedes contactarte con alguno de los coordinadores a los teléfonos <span class="icon-whatsapp has-text-success"></span> <strong class="has-text-success"> <a class="has-text-success" href="https://wa.me/86227500">86227500</a> | <a class="has-text-success" href="https://wa.me/8652 9837">8652 9837</a> | <a class="has-text-success" href="https://wa.me/87984232">87984232</a></strong> o bien registrarte directamente en este sitio donde nosotros revisamos y nos pondremos en contacto con cada nuevo miembro. Este paso es importante ya que evitamos se filtre información del grupo a manos de antisociales que monitorean donde se encuentra el grupo.</p>
+                    <p class="is-size-5 has-text-black-ter mt-5">¿Es seguro registrarme y Quién maneja mis datos?</p>
+                    <p class="has-text-justified has-text-grey mt-5">Este sitio web fue construido con módulos que encriptan la información sensible, de tal forma que ni el desarrollador, puede conocer la contraseña de ingreso. Los datos son administrados en una base de datos en la nube del hosting que se comprometen a resguardar todo el contenido. La Tribu, administrará esos datos únicamente para situaciones de emergencia y/o notificar al usuario de actividades.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function mostrarContraseña() {
+        var x = document.getElementById("password");
+        var y = document.getElementById("confirmar_password");
+        if (x.type === "password") {
+            x.type = "text";
+            y.type = "text";
+        } else {
+            x.type = "password";
+            y.type = "password";
+        }
+    }
+</script>
+
+{% endblock %}

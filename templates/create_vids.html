@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% if video %}Actualizar Video{% else %}Crear Video{% endif %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>{% if video %}Actualizar Video{% else %}Crear Video{% endif %}</h1>
+        <form method="POST" enctype="multipart/form-data"
+            action="{% if video %}{{ url_for('actualizar_video', id=video.id) }}{% else %}{{ url_for('videos') }}{% endif %}">
+            <div class="form-group">
+                <label for="titulo">Título</label>
+                <input type="text" name="titulo" id="titulo" class="form-control" value="{{ video.title if video }}">
+            </div>
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea name="descripcion" id="descripcion" class="form-control">{{ video.detail if video }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="imagen">Imagen</label>
+                <input type="file" name="imagen" id="imagen" class="form-control-file">
+                {% if video and video.image_url %}
+                {% if video.video_url %}
+                <a href="{{ video.video_url }}" target="_blank">
+                <img src="{{ url_for('static', filename=video.image_url) }}" alt="Imagen actual" style="max-width: 100px;">                    
+                </a>
+                {% else %}
+                <img src="{{ url_for('static', filename='uploads/' + video.image_url) }}" alt="Imagen"
+                    style="max-width: 100px;">
+                {% endif %}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="enlace">Enlace</label>
+                <input type="text" name="enlace" id="enlace" class="form-control"
+                    value="{{ video.video_url if video }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+</body>
+{% endblock %}

@@ -1,0 +1,70 @@
+
+
+.time-picker{
+   display:flex;
+   justify-content:center;
+   flex-direction:column;
+   transition:all .4s ease;
+   height:0;
+   overflow:hidden;
+   .set-time{
+      display:flex;
+      justify-content:center;
+      margin-bottom:15px;
+    }
+   .label{
+         width:60px;
+         margin:0 5px;
+         text-align:center;
+         line-height:34px;
+         display:inline-style;
+         a{
+            display:block;
+            border:1px solid #DDDDDD;
+            cursor:pointer;
+            font-size:28px;
+            font-weight:bold;
+            border-radius:3px;
+            &:hover,
+            &:active{
+               background-color:red;
+               color:#FFFFFF;
+            }
+         }
+         .set{
+            text-align:center;
+            box-sizing:border-box;
+            width:100%;
+            height:40px;
+            line-height:34px;
+            font-size:20px;
+            font-weight:bold;
+            border:transparent;
+         }
+      }
+   #submitTime{
+      text-align:center;
+      line-height:34px;
+      border:1px solid #DDDDDD;
+      width:128px;
+      margin:auto;
+      border-radius:3px;
+      cursor:pointer;
+      text-transform:uppercase;
+      font-weight:bold;
+   }
+ }
+
+.time-picker.open{
+   border:1px solid #DDDDDD;
+   padding:15px;
+   transition:all .5s ease;
+   height:auto;
+   background-color:#FCFCFC;
+}
+
+
+.minusH{
+   font-size: 20px;
+}
+

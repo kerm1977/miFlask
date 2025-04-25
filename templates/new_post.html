@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <form action="{{ url_for('new_post') }}" method="POST" enctype="multipart/form-data">
+            <div class="columns">
+                <div class="column is-one-third">
+                    <div id="file-js-example" class="file has-name">
+                        <label class="file-label">
+                            <input class="file-input" type="file" name="image" id="image-input" accept="image/*" />
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                    <span class="icon-cloud-upload"></span>
+                                </span>
+                                <span class="file-label">Imagen</span>
+                            </span>
+                            <span class="file-name">Ninguna imagen seleccionada</span>
+                        </label>
+                        <p id="file-error" style="color: red; display: none;">Error: Archivo no válido.</p>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="title">Título:</label>
+                        <div class="control">
+                            <input class="input" type="text" id="title" name="title" value="{{ post.title if post }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="precio_colones">Precio (Colones Costarricenses):</label>
+                        <div class="control">
+                            <input class="input" type="text"  id="precio_colones" name="precio_colones" value="{{ post.precio_colones if post }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="content">Contenido:</label>
+                <div class="control">
+                    <textarea class="textarea" id="content" name="content" required>{{ post.content if post }}</textarea>
+                </div>
+            </div>
+
+            <script>
+                const fileInput = document.querySelector("#file-js-example input[type=file]");
+                const fileName = document.querySelector("#file-js-example .file-name");
+                const fileError = document.querySelector("#file-error");
+
+                fileInput.onchange = () => {
+                    if (fileInput.files.length > 0) {
+                        const file = fileInput.files[0];
+                        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                        const maxSize = 16 * 1024 * 1024; // 16MB
+
+                        if (!allowedTypes.includes(file.type) || file.size > maxSize) {
+                            fileError.style.display = 'block';
+                            fileName.textContent = 'Ninguna imagen seleccionada';
+                            fileInput.value = ''; // Reset file input
+                            return;
+                        }
+
+                        fileError.style.display = 'none';
+                        fileName.textContent = file.name;
+                    } else {
+                        fileName.textContent = 'Ninguna imagen seleccionada';
+                    }
+                };
+            </script>
+
+            <div class="columns">
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="fecha_salida">Fecha de Salida:</label>
+                        <div class="control">
+                            <input class="input" type="date" id="fecha_salida" name="fecha_salida" value="{{ post.fecha_salida if post }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="hora_salida">Hora de Salida:</label>
+                        <div class="control">
+                            <input class="input" type="time" id="hora_salida" name="hora_salida" value="{{ post.hora_salida.strftime('%H:%M') if post and post.hora_salida }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="lugar_salida">Lugar de Salida:</label>
+                        <div class="control">
+                            <input class="input" type="text" id="lugar_salida" name="lugar_salida" value="{{ post.lugar_salida if post }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="dificultad">Dificultad:</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="dificultad" name="dificultad">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Básico" {% if post and post.dificultad == 'Básico' %}selected{% endif %}>Básico</option>
+                                    <option value="Intermedio" {% if post and post.dificultad == 'Intermedio' %}selected{% endif %}>Intermedio</option>
+                                    <option value="Dificil" {% if post and post.dificultad == 'Dificil' %}selected{% endif %}>Difícil</option>
+                                    <option value="Muy Dificil" {% if post and post.dificultad == 'Muy Dificil' %}selected{% endif %}>Muy Difícil</option>
+                                    <option value="Técnico" {% if post and post.dificultad == 'Técnico' %}selected{% endif %}>Técnico</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="distancia">Distancia (km):</label>
+                        <div class="control">
+                            <input class="input" type="text"  id="distancia" name="distancia" value="{{ post.distancia if post }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="capacidad_total">Capacidad Total:</label>
+                        <div class="control">
+                            <input class="input" type="text" id="capacidad_total" name="capacidad_total" value="{{ post.capacidad_total if post }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="capacidad_buseta">Capacidad Buseta:</label>
+                        <div class="control">
+                            <input class="input" type="text" id="capacidad_buseta" name="capacidad_buseta" value="{{ post.capacidad_buseta if post }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="requiere_estadía">¿Requiere Estadía?</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="requiere_estadía" name="requiere_estadía">
+                                    <option value="">Seleccionar</option>
+                                    <option value="si" {% if post and post.requiere_estadía == 'si' %}selected{% endif %}>Sí</option>
+                                    <option value="no" {% if post and post.requiere_estadía == 'no' %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="animales">¿Se permiten Animales?</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="animales" name="animales">
+                                    <option value="">Seleccionar</option>
+                                    <option value="si" {% if post and post.animales == 'si' %}selected{% endif %}>Sí</option>
+                                    <option value="no" {% if post and post.animales == 'no' %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="duchas">Duchas:</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="duchas" name="duchas">
+                                    <option value="">Seleccionar</option>
+                                    <option value="no aplica" {% if post and post.duchas == 'no aplica' %}selected{% endif %}>No Aplica</option>
+                                    <option value="si" {% if post and post.duchas == 'si' %}selected{% endif %}>Sí</option>
+                                    <option value="no" {% if post and post.duchas == 'no' %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="banos">Baños:</label>
+                        <div class="control">
+                            <div class="select">
+                                 <select id="banos" name="banos">
+                                    <option value="">Seleccionar</option>
+                                    <option value="si" {% if post and post.banos == 'si' %}selected{% endif %}>Sí</option>
+                                    <option value="no" {% if post and post.banos == 'no' %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="bastones">Bastones:</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="bastones" name="bastones">
+                                    <option value="">Seleccionar</option>
+                                    <option value="opcional-si" {% if post and post.bastones == 'opcional-si' %}selected{% endif %}>Opcional</option>
+                                    <option value="si" {% if post and post.bastones == 'si' %}selected{% endif %}>Si</option>
+                                    <option value="no" {% if post and post.bastones == 'no' %}selected{% endif %}>No</option>
+                                    <option value="si con protector de punta" {% if post and post.bastones == 'si con protector de punta' %}selected{% endif %}>Sí, con protector de punta</option>
+                                    <option value="si con roseta y sin protector de punta" {% if post and post.bastones == 'si con roseta y sin protector de punta' %}selected{% endif %}>Sí, con roseta y sin protector de punta</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="guantes">Guantes:</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="guantes" name="guantes">
+                                    <option value="">Seleccionar</option>
+                                    <option value="opcional" {% if post and post.guantes == 'opcional' %}selected{% endif %}>Opcional</option>
+                                    <option value="si" {% if post and post.guantes == 'si' %}selected{% endif %}>Sí</option>
+                                    <option value="no" {% if post and post.guantes == 'no' %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="tipo_calzado">Tipo de Calzado:</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="tipo_calzado" name="tipo_calzado">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Tennis runner" {% if post and post.tipo_calzado == 'Tennis runner' %}selected{% endif %}>Tennis runner</option>
+                                    <option value="Tennis ligeras" {% if post and post.tipo_calzado == 'Tennis ligeras' %}selected{% endif %}>Tennis ligeras</option>
+                                    <option value="Tennis Caña Baja" {% if post and post.tipo_calzado == 'Tennis Caña Baja' %}selected{% endif %}>Tennis Caña Baja</option>
+                                    <option value="Tennis caña media" {% if post and post.tipo_calzado == 'Tennis caña media' %}selected{% endif %}>Tennis caña media</option>
+                                    <option value="tennis caña alta" {% if post and post.tipo_calzado == 'tennis caña alta' %}selected{% endif %}>Tennis caña alta</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="repelente">Repelente:</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="repelente" name="repelente">
+                                    <option value="">Seleccionar</option>
+                                    <option value="opcional" {% if post and post.repelente == 'opcional' %}selected{% endif %}>Opcional</option>
+                                    <option value="si" {% if post and post.repelente == 'si' %}selected{% endif %}>Sí</option>
+                                    <option value="no" {% if post and post.repelente == 'no' %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="bloqueador">Bloqueador Solar:</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="bloqueador" name="bloqueador">
+                                    <option value="">Seleccionar</option>
+                                    <option value="opcional" {% if post and post.bloqueador == 'opcional' %}selected{% endif %}>Opcional</option>
+                                    <option value="si" {% if post and post.bloqueador == 'si' %}selected{% endif %}>Sí</option>
+                                    <option value="no" {% if post and post.bloqueador == 'no' %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                         <label class="label" for="liquido">Líquido:</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="liquido" name="liquido">
+                                    <option value="">Seleccionar</option>
+                                    <option value="1-Litro" {% if post and post.liquido == '1-Litro' %}selected{% endif %}>1 Litro</option>
+                                    <option value="2-Litros" {% if post and post.liquido == '2-Litros' %}selected{% endif %}>2 Litros</option>
+                                    <option value="Más" {% if post and post.liquido == 'Más' %}selected{% endif %}>Más de 2 Litros</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="snacks">Snacks:</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="snacks" name="snacks">
+                                    <option value="">Seleccionar</option>
+                                    <option value="opcional" {% if post and post.snacks == 'opcional' %}selected{% endif %}>Opcional</option>
+                                    <option value="si" {% if post and post.snacks == 'si' %}selected{% endif %}>Sí</option>
+                                    <option value="no" {% if post and post.snacks == 'no' %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="ropa_cambio">Ropa de Cambio:</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="ropa_cambio" name="ropa_cambio">
+                                    <option value="">Seleccionar</option>
+                                    <option value="opcional" {% if post and post.ropa_cambio == 'opcional' %}selected{% endif %}>Opcional</option>
+                                    <option value="si" {% if post and post.ropa_cambio == 'si' %}selected{% endif %}>Sí</option>
+                                    <option value="no" {% if post and post.ropa_cambio == 'no' %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-third">
+                     <div class="field">
+                        <label class="label" for="recogemos_en">Puntos de Recogida:</label>
+                        <div class="control">
+                            <textarea class="textarea" id="recogemos_en" name="recogemos_en">{{ post.recogemos_en if post }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                 <div class="column is-one-third">
+                    <div class="field">
+                        <label class="label" for="tipoTerreno">Tipo de Terreno:</label>
+                        <div class="control">
+                            <textarea class="textarea" id="tipoTerreno" name="tipoTerreno">{{ post.tipoTerreno if post }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <button id="publicarBtn" class="button is-primary btn btn-primary" type="submit">Publicar</button>
+                </div>
+                <div class="control">
+                    <a class="button is-text" href="{{ url_for('index') }}">Cancelar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Información de Publicaciones</title>
+</head>
+<body>
+    <h1>Información de Publicaciones</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Nota</th>
+                <th>Contenido</th>
+                <th>Kilometraje</th>
+                <th>Altura</th>
+                <th>Lugar</th>
+                <th>Fin</th>
+                <th>Etapa</th>
+                <th>Capacidad</th>
+                <th>Hora</th>
+                <th>Salida</th>
+                <th>Dificultad</th>
+                <th>SINPE</th>
+                <th>Coordinador</th>
+                <th>Precio</th>
+                <th>Límite de Pago</th>
+                <th>Parqueo</th>
+                <th>Mascotas</th>
+                <th>Duchas</th>
+                <th>Baños</th>
+                <th>Imagen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for publicacion in publicaciones %}
+            <tr>
+                <td>{{ publicacion[1] }}</td>
+                <td>{{ publicacion[2] }}</td>
+                <td>{{ publicacion[3] }}</td>
+                <td>{{ publicacion[4] }}</td>
+                <td>{{ publicacion[5] }}</td>
+                <td>{{ publicacion[6] }}</td>
+                <td>{{ publicacion[7] }}</td>
+                <td>{{ publicacion[8] }}</td>
+                <td>{{ publicacion[9] }}</td>
+                <td>{{ publicacion[10] }}</td>
+                <td>{{ publicacion[11] }}</td>
+                <td>{{ publicacion[12] }}</td>
+                <td>{{ publicacion[13] }}</td>
+                <td>{{ publicacion[14] }}</td>
+                <td>{{ publicacion[15] }}</td>
+                <td>{{ publicacion[16] }}</td>
+                <td>{{ 'Sí' if publicacion[17] else 'No' }}</td>
+                <td>{{ 'Sí' if publicacion[18] else 'No' }}</td>
+                <td>{{ 'Sí' if publicacion[19] else 'No' }}</td>
+                <td>{{ 'Sí' if publicacion[20] else 'No' }}</td>
+                <td><img src="{{ url_for('static', filename='uploads/' + publicacion[21]) }}" alt="Imagen" style="width: 100px;"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

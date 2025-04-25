@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="agenda-section">
+  <div class="container is-fluid">
+    <h1 class="title">Editar Usuario</h1>
+    <form method="POST">
+      <div class="field">
+        <label class="label">Nombre</label>
+        <div class="control">
+          <input class="input" type="text" name="nombre" value="{{ usuario.name }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Primer Apellido</label>
+        <div class="control">
+          <input class="input" type="text" name="apellido1" value="{{ usuario.first_last_name }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Segundo Apellido</label>
+        <div class="control">
+          <input class="input" type="text" name="apellido2" value="{{ usuario.second_last_name }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Teléfono</label>
+        <div class="control">
+          <input class="input" type="text" name="telefono" value="{{ usuario.phone_number }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Email</label>
+        <div class="control">
+          <input class="input" type="email" name="email" value="{{ usuario.email }}">
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-link">Guardar Cambios</button>
+        </div>
+        <div class="control">
+          <a href="{{ url_for('users') }}" class="button is-link is-light">Cancelar</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

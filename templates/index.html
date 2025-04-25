@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* Estilos de íconos (icomoon) */
+    @font-face {
+        font-family: 'icomoon';
+        src: url('{{ url_for('static', filename='fonts/icomoon.eot?d9jn37') }}');
+        src: url('{{ url_for('static', filename='fonts/icomoon.eot?d9jn37#iefix') }}') format('embedded-opentype'),
+             url('{{ url_for('static', filename='fonts/icomoon.ttf?d9jn37') }}') format('truetype'),
+             url('{{ url_for('static', filename='fonts/icomoon.woff?d9jn37') }}') format('woff'),
+             url('{{ url_for('static', filename='fonts/icomoon.svg?d9jn37#icomoon') }}') format('svg');
+        font-weight: normal;
+        font-style: normal;
+        font-display: block;
+    }
+
+    .icon {
+        font-family: 'icomoon' !important;
+        speak: never;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .icon-whatsapp:before {
+        content: "\ea93";
+    }
+
+    .icon-facebook:before {
+        content: "\ea90";
+    }
+
+    /* Estilos generales */
+    .section {
+        padding: 3rem 1.5rem;
+    }
+
+    .title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .post-card-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    .image img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .title.is-4 {
+        color: #007bff;
+        margin-top: 1rem;
+        text-align: center;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .title.is-4:hover {
+        color: #0056b3;
+    }
+
+    .share-icons {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    .share-icons a {
+        margin: 0 0.5rem;
+        color: #007bff;
+        transition: color 0.3s ease;
+    }
+
+    .share-icons a:hover {
+        color: #0056b3;
+    }
+
+    .post-actions {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 1rem;
+    }
+
+    .button {
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .pagination {
+        margin-top: 2rem;
+    }
+
+    .pagination-link {
+        border-radius: 5px;
+        margin: 0 0.25rem;
+    }
+
+    .pagination-link.is-current {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .pagination-ellipsis {
+        margin: 0 0.25rem;
+    }
+
+    .icon-whatsapp {
+        color: #25D366;
+    }
+
+    .icon-facebook {
+        color: #1877F2;
+    }
+
+    /* Separador entre posts (opcional, mejorado) */
+    .post-card-container {
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .post-card-container:last-child {
+        border-bottom: none; /* Sin separador en el último */
+    }
+</style>
+
+<section class="section">
+    <div class="container">
+        {% if current_user.is_authenticated and (current_user.email == "kenth1977@gmail.com" or current_user.email == "jceciliano69@gmail.com") %}
+            <a href="{{ url_for('new_post') }}" class="btn btn-success mb-3">Crear Nuevo Post</a>
+        {% endif %}
+
+        <div class="columns is-multiline">
+            {% for post in posts_pagination.items %}
+                <div class="column is-3-desktop is-4-tablet post-card-container">
+                    <div class="card-content">
+                        <a href="{{ url_for('post', post_id=post.id) }}">
+                            <figure class="image">
+                                {% if post.image %}
+                                    <img src="{{ url_for('static', filename='images/' + post.image) }}" alt="{{ post.title }}">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='images/image_not_available.png') }}" alt="Imagen no disponible">
+                                {% endif %}
+                            </figure>
+                            <h2 class="title is-4">{{ post.title }}</h2>
+                        </a>
+                        {% if post.precio_colones %}
+                            <strong>Precio:</strong> ¢{{ post.precio_colones}}
+                        {% endif %}
+
+                        <div class="share-icons">
+                            <hr>
+                            <a href="https://api.whatsapp.com/send?text={{ url_for('post', post_id=post.id, _external=true) }}" target="_blank">
+                                <span class="icon icon-whatsapp"></span>
+                            </a>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ url_for('post', post_id=post.id, _external=true) }}" target="_blank">
+                                <span class="icon icon-facebook"></span>
+                            </a>
+                        </div>
+
+                        {% if current_user.is_authenticated and (current_user.email == "kenth1977@gmail.com" or current_user.email == "jceciliano69@gmail.com") %}
+                            <div class="post-actions">
+                                <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-primary btn-sm" title="Editar">Editar</a>
+                                <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que quieres borrar este post?')" title="Borrar">Borrar</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+            {% if posts_pagination.has_prev %}
+                <a class="pagination-previous" href="{{ url_for('index', page=posts_pagination.prev_num) }}">Anterior</a>
+            {% endif %}
+            {% if posts_pagination.has_next %}
+                <a class="pagination-next" href="{{ url_for('index', page=posts_pagination.next_num) }}">Siguiente</a>
+            {% endif %}
+            <ul class="pagination-list">
+                {% for page in posts_pagination.iter_pages() %}
+                    {% if page %}
+                        <li>
+                            <a class="pagination-link {% if page == posts_pagination.page %}is-current{% endif %}" href="{{ url_for('index', page=page) }}" aria-label="Goto page {{ page }}">{{ page }}</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <span class="pagination-ellipsis">&hellip;</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</section>
+
+{% endblock %}
