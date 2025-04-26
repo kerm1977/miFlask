@@ -5,14 +5,17 @@
     /* Estilos personalizados para la gestión de archivos */
     body { padding-top: 56px; } /* Ajuste para la barra de navegación fija si la tienes */
 
-    /* Estilo específico para el contenedor de imágenes después del filtro */
-    .tipo-imagen {
+    /* Estilo para los contenedores de tipo de archivo */
+    .tipo-video, .tipo-audio, .tipo-imagen, .tipo-documento, .tipo-pdf {
         display: flex; /* Activa el flexbox para la disposición horizontal */
         flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea si no caben */
     }
 
-    .tipo-imagen .col-md-3 {
-        width: 25%; /* Cada imagen ocupa el 25% del ancho en pantallas medianas y grandes */
+    .tipo-video .col-md-4,
+    .tipo-audio .col-md-4,
+    .tipo-documento .col-md-4,
+    .tipo-pdf .col-md-4,
+    .tipo-imagen .col-md-3 { /* Mantenemos el ancho específico para imágenes */
         box-sizing: border-box; /* Incluye el padding y el border en el ancho */
         padding-right: 15px; /* Espacio entre las tarjetas (ajusta si es necesario) */
         padding-left: 15px;
@@ -21,22 +24,26 @@
 
     /* Ajustes para pantallas más pequeñas (opcional) */
     @media (max-width: 992px) { /* Para pantallas medianas (tablets) */
+        .tipo-video .col-md-4,
+        .tipo-audio .col-md-4,
+        .tipo-documento .col-md-4,
+        .tipo-pdf .col-md-4,
         .tipo-imagen .col-md-3 {
-            width: 50%; /* Mostrar 2 imágenes por fila */
+            width: 50%; /* Mostrar 2 elementos por fila */
         }
     }
 
     @media (max-width: 576px) { /* Para pantallas pequeñas (móviles) */
+        .tipo-video .col-md-4,
+        .tipo-audio .col-md-4,
+        .tipo-documento .col-md-4,
+        .tipo-pdf .col-md-4,
         .tipo-imagen .col-md-3 {
-            width: 100%; /* Mostrar 1 imagen por fila */
+            width: 100%; /* Mostrar 1 elemento por fila */
         }
     }
 
     /* Estilos para ocultar/mostrar por tipo */
-    .tipo-video, .tipo-audio, .tipo-documento, .tipo-pdf {
-        display: block; /* Mostrar todos por defecto */
-    }
-
     .oculto {
         display: none !important;
     }
@@ -217,31 +224,51 @@
     function filtrarPorTipo() {
         const tipoFiltro = document.getElementById('tipo_filtro').value;
         const archivosContainer = document.getElementById('archivos-container');
-        const tiposArchivo = ['video', 'audio', 'imagen', 'documento', 'pdf'];
+        const titulos = archivosContainer.querySelectorAll('h2');
+        const tiposArchivo = {
+            'video': 'VIDEOS',
+            'audio': 'AUDIO',
+            'imagen': 'IMÁGENES',
+            'documento': 'DOCUMENTOS (General)',
+            'pdf': 'PDFs'
+        };
 
-        tiposArchivo.forEach(tipo => {
-            const elementosTipo = archivosContainer.querySelectorAll(`.tipo-${tipo}`);
-            const tituloTipo = archivosContainer.querySelector(`h2:has(.icon-${getIconClass(tipo)})`);
+        titulos.forEach(titulo => {
+            const tipoTitulo = Object.keys(tiposArchivo).find(key => tiposArchivo[key] === titulo.innerText.trim());
+            const contenedorTipo = titulo.nextElementSibling; // Asumimos que el div contenedor sigue al h2
 
-            elementosTipo.forEach(elemento => {
-                elemento.classList.toggle('oculto', tipoFiltro !== '' && tipoFiltro !== tipo);
-            });
-
-            if (tituloTipo) {
-                tituloTipo.classList.toggle('oculto', tipoFiltro !== '' && tipoFiltro !== tipo && tipoFiltro !== 'mostrar-todos');
+            if (tipoFiltro === '') {
+                // Mostrar todo si no hay filtro
+                titulo.classList.remove('oculto');
+                if (contenedorTipo) {
+                    contenedorTipo.classList.remove('oculto');
+                }
+            } else if (tipoTitulo === tipoFiltro) {
+                // Mostrar el título y el contenedor si coinciden con el filtro
+                titulo.classList.remove('oculto');
+                if (contenedorTipo) {
+                    contenedorTipo.classList.remove('oculto');
+                }
+            } else {
+                // Ocultar el título y el contenedor si no coinciden con el filtro
+                titulo.classList.add('oculto');
+                if (contenedorTipo) {
+                    contenedorTipo.classList.add('oculto');
+                }
             }
         });
     }
 
-    function getIconClass(tipo) {
-        switch (tipo) {
-            case 'video': return 'icon-film';
-            case 'audio': return 'icon-music';
-            case 'imagen': return 'icon-image';
-            case 'documento': return 'icon-doc-text-inv';
-            case 'pdf': return 'icon-file-pdf';
-            default: return '';
-        }
-    }
+    // Esta función ya no es necesaria con la nueva lógica de filtrado basada en el texto del título
+    // function getIconClass(tipo) {
+    //     switch (tipo) {
+    //         case 'video': return 'icon-film';
+    //         case 'audio': return 'icon-music';
+    //         case 'imagen': return 'icon-image';
+    //         case 'documento': return 'icon-doc-text-inv';
+    //         case 'pdf': return 'icon-file-pdf';
+    //         default: return '';
+    //     }
+    // }
 </script>
 {% endblock %}
