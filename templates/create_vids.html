@@ -1,15 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-
-<head>
-    <meta charset="UTF-8">
-    <title>{% if video %}Actualizar Video{% else %}Crear Video{% endif %}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-
-<body>
     <div class="container">
-        <h1>{% if video %}Actualizar Video{% else %}Crear Video{% endif %}</h1>
         <form method="POST" enctype="multipart/form-data"
             action="{% if video %}{{ url_for('actualizar_video', id=video.id) }}{% else %}{{ url_for('videos') }}{% endif %}">
             <div class="form-group">
@@ -42,5 +33,5 @@
             <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>
-</body>
+
 {% endblock %}

@@ -28,7 +28,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-
+import mimetypes
 # RECUPERACION DE CONTRASEÑA EN CASO DE QUE NO FUNCIONE BORRAR
 # RECUPERACION DE CONTRASEÑA EN CASO DE QUE NO FUNCIONE BORRAR
 # BORRAR TAMBIEN reset_password, RESTABLECER CONTRASEÑA
@@ -70,8 +70,8 @@ app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 db = SQLAlchemy(app)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # Desactiva el seguimiento de modificaciones de SQLAlchemy (Depende de db)
 app.secret_key = os.urandom(24) # Genera una clave secreta para la sesión (Depende de flask_login)
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'} # Define las extensiones de archivo permitidas (Depende de las rutas de images)
-app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS # Configura las extensiones permitidas en la aplicación (Depende de rutas que manejan images)
+ALLOWED_EXTENSIONS = {'txt', 'pdf','png', 'jpg', 'jpeg', 'gif', 'mp3', 'mp4', 'webm', 'avi', 'aac', 'ogg', 'flac', 'alac'}
+app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS # Define las extensiones de archivo permitidas (Depende de las rutas de images)
 #db = SQLAlchemy(app) # Crea una instancia de SQLAlchemy asociada a la aplicación (Depende de app y configura la base de datos)
 login_manager = LoginManager() # Crea una instancia de LoginManager para manejar la autenticación (Depende de app)
 login_manager.init_app(app) # Inicializa LoginManager con la aplicación (Depende de app)
@@ -305,7 +305,7 @@ def post(post_id):
 @app.route('/new', methods=['GET', 'POST'])
 @login_required
 def new_post():
-    titulo = "Crear Un Nuevo Post"
+    title = "Crear Un Nuevo Post"
     if request.method == 'POST':
         title = request.form['title']
         content = request.form['content']
@@ -385,12 +385,12 @@ def new_post():
                 flash(f'Error al crear la publicación: {e}', 'danger')
                 return render_template('new_post.html', error=str(e))
 
-    return render_template('new_post.html', titulo=titulo)
+    return render_template('new_post.html', title=title)
 
 @app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
 @login_required
 def edit_post(post_id):
-    titulo = "Editar el Post"
+    title = "Editar el Post"
     post = Post.query.get_or_404(post_id)
     if post.user_id != current_user.id:
         flash("No tienes permiso para editar este post.", "danger")
@@ -454,9 +454,9 @@ def edit_post(post_id):
         except Exception as e:
             db.session.rollback()
             flash(f'Error al editar la publicación: {e}', 'danger')
-            return render_template('edit_post.html', post=post, titulo=titulo, error=str(e))
+            return render_template('edit_post.html', post=post, title=title, error=str(e))
 
-    return render_template('edit_post.html', post=post, titulo=titulo)
+    return render_template('edit_post.html', post=post, title=title)
 
 @app.route('/delete/<int:post_id>', methods=['POST'])
 @login_required
@@ -498,7 +498,8 @@ def delete_post(post_id):
 
 @app.route('/create_vids')
 def create_vids():
-    return render_template('create_vids.html')
+    title = "Agregar videos"
+    return render_template('create_vids.html', title=title)
 
 
 @app.route('/videos', methods=['GET', 'POST'])
@@ -643,7 +644,7 @@ def uploaded_file(filename):
 @app.route('/users', methods=['GET'])
 @login_required
 def users():
-    titulo = "Lista de Usuarios"
+    title = "Lista de Usuarios"
     search_term = request.args.get('search', '').lower()  # Convertir a minúsculas
 
     if search_term:
@@ -676,7 +677,7 @@ def users():
                 users_by_letter[first_letter] = []
             users_by_letter[first_letter].append(user)
 
-    return render_template('users.html', titulo=titulo, users_by_letter=users_by_letter, user_count=user_count, search_term=search_term)
+    return render_template('users.html', title=title, users_by_letter=users_by_letter, user_count=user_count, search_term=search_term)
 
 
 
@@ -799,7 +800,8 @@ def login(): # Define la función para el inicio de sesión
 @app.route('/perfil') # Define la ruta para el perfil del usuario (Depende de render_template, current_user y login_required)
 @login_required # Requiere que el usuario esté autenticado
 def perfil(): # Define la función para el perfil del usuario
-    return render_template('perfil.html', usuario=current_user) # Renderiza la plantilla perfil.html
+    title = "Mi Cuenta"
+    return render_template('perfil.html', usuario=current_user, title=title) # Renderiza la plantilla perfil.html
 
 @app.route('/avatar/<filename>')
 def serve_avatar(filename):
@@ -1034,47 +1036,93 @@ def reset_password(token):
 
 # ADMINISTRADOR DE ARCHIVOS
 
-@app.route('/archivos')
-@login_required
-def archivos():
-    archivos = os.listdir(UPLOAD_FOLDER)
-    archivos_con_usuarios = []
-    for archivo in archivos:
-        es_imagen = archivo.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))
-        archivos_con_usuarios.append({'nombre_archivo': archivo, 'usuario': None, 'es_imagen': es_imagen})
-
-    return render_template('archivos.html', archivos=archivos_con_usuarios, upload_folder=UPLOAD_FOLDER)
-
-@app.route('/borrar/<nombre_archivo>')
-@login_required
-def borrar(nombre_archivo):
-    ruta_archivo = os.path.join(UPLOAD_FOLDER, nombre_archivo)
-    try:
-        os.remove(ruta_archivo)
-        flash('Archivo borrado con éxito.', 'success')
-    except FileNotFoundError:
-        flash('El archivo no existe.', 'error')
-    return redirect(url_for('archivos'))
-
 @app.route('/subir', methods=['POST'])
 @login_required
 def subir():
     if 'miArchivo' not in request.files:
-        flash('No se seleccionó ningún archivo.', 'error')
-        return redirect(url_for('archivos'))
-    archivo = request.files['miArchivo']
-    if archivo.filename == '':
-        flash('No se seleccionó ningún archivo.', 'error')
-        return redirect(url_for('archivos'))
-    if archivo and allowed_file(archivo.filename):
-        nombre_archivo = secure_filename(archivo.filename)
-        archivo.save(os.path.join(UPLOAD_FOLDER, nombre_archivo))
-        flash('Archivo subido con éxito.', 'success')
+        flash('No se ha seleccionado ningún archivo', 'danger')
+        return redirect(request.url)
+    file = request.files['miArchivo']
+    if file.filename == '':
+        flash('No se ha seleccionado ningún archivo', 'danger')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        flash('Archivo subido exitosamente', 'success')
         return redirect(url_for('archivos'))
     else:
-        flash('Tipo de archivo no permitido.', 'error')
-        return redirect(url_for('archivos'))
+        flash('Tipo de archivo no permitido', 'danger')
+        return redirect(request.url)
 
+@app.route('/archivos')
+@login_required
+def archivos():
+    title = "Gestión de Archivos"
+    archivos_en_disco = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], f))]
+    archivos_con_usuarios = []
+    for archivo_original in archivos_en_disco:
+        ruta_archivo_original = os.path.join(app.config['UPLOAD_FOLDER'], archivo_original)
+        mime_original = mimetypes.guess_type(ruta_archivo_original)[0]
+        tipo = 'otro'
+        archivo_para_mostrar = archivo_original
+        mimetype_para_mostrar = mime_original
+
+        if mime_original and mime_original.startswith('image/'):
+            tipo = 'imagen'
+        elif mime_original and mime_original.startswith('audio/'):
+            tipo = 'audio'
+        elif mime_original and mime_original.startswith('video/'):
+            tipo = 'video'
+        elif mime_original == 'application/pdf':
+            tipo = 'pdf'
+        elif mime_original and (mime_original.startswith('application/') or mime_original.startswith('text/')):
+            tipo = 'documento'
+
+        archivos_con_usuarios.append({
+            'nombre_archivo': archivo_para_mostrar,
+            'usuario': current_user.id if current_user.is_authenticated else None, # Ejemplo de asociar usuario
+            'tipo': tipo,
+            'mimetype': mimetype_para_mostrar
+        })
+
+    print(archivos_con_usuarios) # Para depuración
+    return render_template('archivos.html', archivos=archivos_con_usuarios, upload_folder=app.config['UPLOAD_FOLDER'], title=title)
+
+@app.route('/borrar/<nombre_archivo>')
+@login_required
+def borrar(nombre_archivo):
+    ruta_archivo = os.path.join(app.config['UPLOAD_FOLDER'], nombre_archivo)
+    if os.path.exists(ruta_archivo):
+        os.remove(ruta_archivo)
+        flash(f'Archivo "{nombre_archivo}" borrado exitosamente', 'success')
+    else:
+        flash(f'No se pudo encontrar el archivo "{nombre_archivo}"', 'danger')
+    return redirect(url_for('archivos'))
+
+@app.route('/confirmar_borrar/<nombre_archivo>')
+def confirmar_borrar(nombre_archivo):
+    return render_template('confirmar_borrar.html', nombre_archivo=nombre_archivo)
+
+@app.route('/borrar/<nombre_archivo>')
+def borrar_archivo(nombre_archivo):
+    ruta_archivo = os.path.join(app.config['UPLOAD_FOLDER'], nombre_archivo)
+    if os.path.exists(ruta_archivo):
+        os.remove(ruta_archivo)
+        flash(f'El archivo "{nombre_archivo}" ha sido borrado exitosamente.', 'success')
+    else:
+        flash(f'Error: El archivo "{nombre_archivo}" no se encontró.', 'danger')
+    return redirect(url_for('gestion_archivos')) # Asegúrate de que esta sea tu ruta principal
+
+@app.route('/cancelar_borrar')
+def cancelar_borrar():
+    flash('La acción de borrado ha sido cancelada.', 'info')
+    return redirect(url_for('gestion_archivos')) # Asegúrate de que esta sea tu ruta principal
+
+@app.route('/descargar/<nombre_archivo>')
+@login_required
+def descargar(nombre_archivo):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], nombre_archivo, as_attachment=True)
 
 
 # -------------------------------------------------------------------

@@ -1,74 +1,247 @@
 {% extends "base.html" %}
+{% block title %}Gestión de Archivos{% endblock %}
 {% block content %}
+<style>
+    /* Estilos personalizados para la gestión de archivos */
+    body { padding-top: 56px; } /* Ajuste para la barra de navegación fija si la tienes */
 
+    /* Estilo específico para el contenedor de imágenes después del filtro */
+    .tipo-imagen {
+        display: flex; /* Activa el flexbox para la disposición horizontal */
+        flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea si no caben */
+    }
 
-    <style>
-    .card {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        box-shadow: none; /* Elimina la sombra */
-        border: 1px solid #dee2e6; /* Opcional: agrega un borde para definir los cards */
+    .tipo-imagen .col-md-3 {
+        width: 25%; /* Cada imagen ocupa el 25% del ancho en pantallas medianas y grandes */
+        box-sizing: border-box; /* Incluye el padding y el border en el ancho */
+        padding-right: 15px; /* Espacio entre las tarjetas (ajusta si es necesario) */
+        padding-left: 15px;
+        margin-bottom: 30px; /* Espacio debajo de cada tarjeta */
     }
-    .card-body {
-        display: flex;
-        flex-direction: column;
+
+    /* Ajustes para pantallas más pequeñas (opcional) */
+    @media (max-width: 992px) { /* Para pantallas medianas (tablets) */
+        .tipo-imagen .col-md-3 {
+            width: 50%; /* Mostrar 2 imágenes por fila */
+        }
     }
-    .card-actions {
-        margin-top: auto;
-        display: flex;
+
+    @media (max-width: 576px) { /* Para pantallas pequeñas (móviles) */
+        .tipo-imagen .col-md-3 {
+            width: 100%; /* Mostrar 1 imagen por fila */
+        }
     }
-    .card-actions a {
-        flex-grow: 1;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+
+    /* Estilos para ocultar/mostrar por tipo */
+    .tipo-video, .tipo-audio, .tipo-documento, .tipo-pdf {
+        display: block; /* Mostrar todos por defecto */
+    }
+
+    .oculto {
+        display: none !important;
     }
 </style>
 
 <div class="container mt-4">
-    <h1>Gestión de Archivos</h1>
-
     {% with mensajes = get_flashed_messages(with_categories=true) %}
-    {% if mensajes %}
-        {% for categoria, mensaje in mensajes %}
-            <div class="mensaje {{ categoria }} {{ categoria }}">
-                {{ mensaje }}
-            </div>
-        {% endfor %}
-    {% endif %}
+        {% if mensajes %}
+            {% for categoria, mensaje in mensajes %}
+                <div class="alert alert-{{ categoria }}">{{ mensaje }}</div>
+            {% endfor %}
+        {% endif %}
     {% endwith %}
 
-    <div class="row">
-        {% for item in archivos %}
-            {% if item.es_imagen %}
-                <div class="col-md-2 mb-4">
-                    <div class="card">
-                        <img src="{{ url_for('uploaded_file', filename=item.nombre_archivo) }}" class="card-img-top" alt="Imagen Subida">
-                        <div class="card-body">
-                            <h5 class="card-title text-truncate">{{ item.nombre_archivo }}</h5>
-                            {% if item.usuario %}
-                                <img src="{{ item.usuario.avatar }}" alt="Avatar" class="avatar">
-                            {% endif %}
-                            <hr>
-                            <div class="card-actions">
-                                <a href="{{ url_for('borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-danger">Borrar</a>
+    <div class="mb-3">
+        <label for="tipo_filtro" class="form-label">Filtrar por tipo:</label>
+        <select class="form-select" id="tipo_filtro" onchange="filtrarPorTipo()">
+            <option value="">Mostrar todos</option>
+            <option value="video">Videos</option>
+            <option value="audio">Audio</option>
+            <option value="imagen">Imágenes</option>
+            <option value="documento">Documentos (General)</option>
+            <option value="pdf">PDFs</option>
+        </select>
+    </div>
+
+    <div id="archivos-container">
+        <h2 class="mt-4"><span class="icon-film"></span> VIDEOS</h2>
+        <div class="row tipo-video">
+            {% for item in archivos %}
+                {% if item.tipo == 'video' %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-truncate">{{ item.nombre_archivo }}</h5>
+                                <video controls class="card-img-top">
+                                    <source src="{{ url_for('uploaded_file', filename=item.nombre_archivo) }}" type="{{ item.mimetype }}">
+                                    Tu navegador no soporta la reproducción de video.
+                                </video>
+                                <hr>
+                                <div class="card-actions">
+                                    <a href="{{ url_for('confirmar_borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-warning btn-sm">Borrar</a>
+                                    <a href="{{ url_for('descargar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-success btn-sm ml-1">Descargar</a>
+                                </div>
                             </div>
                         </div>
                     </div>
+                {% endif %}
+            {% endfor %}
+            {% if not archivos|selectattr('tipo', 'equalto', 'video')|list %}
+                <div class="col-12">
+                    <p>No hay videos subidos.</p>
                 </div>
             {% endif %}
-        {% endfor %}
+        </div>
+
+        <h2 class="mt-4"><i class="icon-music"></i> AUDIO</h2>
+        <div class="row tipo-audio">
+            {% for item in archivos %}
+                {% if item.tipo == 'audio' %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-truncate">{{ item.nombre_archivo }}</h5>
+                                <audio controls class="card-img-top">
+                                    <source src="{{ url_for('uploaded_file', filename=item.nombre_archivo) }}" type="{{ item.mimetype }}">
+                                    Tu navegador no soporta la reproducción de audio.
+                                </audio>
+                                <hr>
+                                <div class="card-actions">
+                                    <a href="{{ url_for('confirmar_borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-warning btn-sm">Borrar</a>
+                                    <a href="{{ url_for('descargar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-success btn-sm ml-1">Descargar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if not archivos|selectattr('tipo', 'equalto', 'audio')|list %}
+                <div class="col-12">
+                    <p>No hay audios subidos.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <h2 class="mt-4"><i class="icon-image"></i> IMÁGENES</h2>
+        <div class="row tipo-imagen">
+            {% for item in archivos %}
+                {% if item.tipo == 'imagen' %}
+                    <div class="col-md-3 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-truncate">{{ item.nombre_archivo }}</h5>
+                                <img src="{{ url_for('uploaded_file', filename=item.nombre_archivo) }}" class="card-img-top" alt="Imagen Subida">
+                                <hr>
+                                <div class="card-actions">
+                                    <a href="{{ url_for('confirmar_borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-warning btn-sm">Borrar</a>
+                                    <a href="{{ url_for('descargar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-success btn-sm ml-1">Descargar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if not archivos|selectattr('tipo', 'equalto', 'imagen')|list %}
+                <div class="col-12">
+                    <p>No hay imágenes subidas.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <h2 class="mt-4"><span class="icon-doc-text-inv"></span> DOCUMENTOS (General)</h2>
+        <div class="row tipo-documento">
+            {% for item in archivos %}
+                {% if item.tipo == 'documento' and item.mimetype != 'application/pdf' %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-truncate">{{ item.nombre_archivo }}</h5>
+                                <p>Tipo: {{ item.mimetype }}</p>
+                                <hr>
+                                <div class="card-actions">
+                                    <a href="{{ url_for('confirmar_borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-warning btn-sm">Borrar</a>
+                                    <a href="{{ url_for('descargar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-success btn-sm ml-1">Descargar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if not archivos|selectattr('tipo', 'equalto', 'documento')|rejectattr('mimetype', 'equalto', 'application/pdf')|list %}
+                <div class="col-12">
+                    <p>No hay otros documentos subidos.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <h2 class="mt-4"><span class="icon-file-pdf"></span> PDFs</h2>
+        <div class="row tipo-pdf">
+            {% for item in archivos %}
+                {% if item.tipo == 'pdf' %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-truncate">{{ item.nombre_archivo }}</h5>
+                                <a href="{{ url_for('uploaded_file', filename=item.nombre_archivo) }}" target="_blank" class="btn btn-outline-info btn-block mb-2">
+                                    Ver PDF
+                                </a>
+                                <hr>
+                                <div class="card-actions">
+                                    <a href="{{ url_for('confirmar_borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-warning btn-sm">Borrar</a>
+                                    <a href="{{ url_for('descargar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-success btn-sm ml-1">Descargar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if not archivos|selectattr('tipo', 'equalto', 'pdf')|list %}
+                <div class="col-12">
+                    <p>No hay PDFs subidos.</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 
-    <h2 class="mt-4">Subir Nuevo Archivo</h2>
+    <h2 class="mt-4"><i class="icon-upload"></i> Subir Nuevo Archivo</h2>
     <form action="{{ url_for('subir') }}" method="post" enctype="multipart/form-data" id="miFormulario">
-        <label for="miArchivo">Selecciona un archivo:</label>
-        <input type="file" name="miArchivo" id="miArchivo">
-        <br><br>
-        <button type="submit" id="miBoton">Enviar</button>
+        <div class="mb-3">
+            <label for="miArchivo" class="form-label">Selecciona un archivo:</label>
+            <input type="file" name="miArchivo" id="miArchivo" class="form-control">
+        </div>
+        <button type="submit" id="miBoton" class="btn btn-primary">Subir</button>
     </form>
 </div>
 
+<script>
+    function filtrarPorTipo() {
+        const tipoFiltro = document.getElementById('tipo_filtro').value;
+        const archivosContainer = document.getElementById('archivos-container');
+        const tiposArchivo = ['video', 'audio', 'imagen', 'documento', 'pdf'];
+
+        tiposArchivo.forEach(tipo => {
+            const elementosTipo = archivosContainer.querySelectorAll(`.tipo-${tipo}`);
+            const tituloTipo = archivosContainer.querySelector(`h2:has(.icon-${getIconClass(tipo)})`);
+
+            elementosTipo.forEach(elemento => {
+                elemento.classList.toggle('oculto', tipoFiltro !== '' && tipoFiltro !== tipo);
+            });
+
+            if (tituloTipo) {
+                tituloTipo.classList.toggle('oculto', tipoFiltro !== '' && tipoFiltro !== tipo && tipoFiltro !== 'mostrar-todos');
+            }
+        });
+    }
+
+    function getIconClass(tipo) {
+        switch (tipo) {
+            case 'video': return 'icon-film';
+            case 'audio': return 'icon-music';
+            case 'imagen': return 'icon-image';
+            case 'documento': return 'icon-doc-text-inv';
+            case 'pdf': return 'icon-file-pdf';
+            default: return '';
+        }
+    }
+</script>
 {% endblock %}

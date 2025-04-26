@@ -94,22 +94,18 @@
 
 <section class="agenda-section">
     <div class="container is-fluid">
-        <div class="agenda-title">
-            <h1 class="title">{{ titulo }}</h1>
-        </div>
-
-        <div class="search-box">
-            <form method="GET" action="{{ url_for('users') }}">
-                <div class="field has-addons">
-                    <div class="control is-expanded">
-                        <input class="input is-large is-rounded" type="text" id="search" name="search" value="{{ search_term or '' }}">
-                    </div>
-                    <div class="control">
-                        <button class="button is-warning is-large" type="submit">Buscar</button>
-                    </div>
+      <div class="search-box">
+        <form method="GET" action="{{ url_for('users') }}">
+            <div class="field has-addons">
+                <div class="control is-expanded">
+                    <input class="input is-large is-rounded" type="text" id="search" name="search" value="{{ search_term or '' }}">
                 </div>
-            </form>
-        </div>
+                <div class="control">
+                    <button class="button is-warning is-large" type="submit">Buscar</button>
+                </div>
+            </div>
+        </form>
+      </div>
 
         <div class="user-count">
             <p>Total de usuarios: {{ user_count }}</p>
