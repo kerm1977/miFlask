@@ -47,17 +47,57 @@
     .oculto {
         display: none !important;
     }
+
+    /* Estilos para el modal */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1000; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+        position: relative; /* Para posicionar el botón de cerrar */
+    }
+
+    .close-button {
+        color: #aaa;
+        position: absolute; /* Posicionamiento absoluto */
+        top: 10px;          /* Ajusta la posición vertical */
+        right: 15px;         /* Ajusta la posición horizontal */
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;    /* Indica que es un elemento interactivo */
+    }
+
+    .close-button:hover,
+    .close-button:focus {
+        color: black;
+        text-decoration: none;
+    }
+
+    .modal-buttons {
+        margin-top: 20px;
+        display: flex;        /* Usa flexbox para los botones */
+        justify-content: space-between; /* Espacio entre botones */
+        align-items: center;    /* Centrar verticalmente los botones, si es necesario */
+    }
+    .modal-buttons button {
+        margin: 0; /* Elimina el margen por defecto de los botones */
+    }
 </style>
 
 <div class="container mt-4">
-    {% with mensajes = get_flashed_messages(with_categories=true) %}
-        {% if mensajes %}
-            {% for categoria, mensaje in mensajes %}
-                <div class="alert alert-{{ categoria }}">{{ mensaje }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
     <div class="mb-3">
         <label for="tipo_filtro" class="form-label">Filtrar por tipo:</label>
         <select class="form-select" id="tipo_filtro" onchange="filtrarPorTipo()">
@@ -85,7 +125,7 @@
                                 </video>
                                 <hr>
                                 <div class="card-actions">
-                                    <a href="{{ url_for('confirmar_borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-warning btn-sm">Borrar</a>
+                                    <a href="#" class="btn btn-warning btn-sm" onclick="mostrarModal('{{ item.nombre_archivo }}', '{{ url_for('borrar', nombre_archivo=item.nombre_archivo) }}')">Borrar</a>
                                     <a href="{{ url_for('descargar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-success btn-sm ml-1">Descargar</a>
                                 </div>
                             </div>
@@ -114,7 +154,7 @@
                                 </audio>
                                 <hr>
                                 <div class="card-actions">
-                                    <a href="{{ url_for('confirmar_borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-warning btn-sm">Borrar</a>
+                                    <a href="#" class="btn btn-warning btn-sm" onclick="mostrarModal('{{ item.nombre_archivo }}', '{{ url_for('borrar', nombre_archivo=item.nombre_archivo) }}')">Borrar</a>
                                     <a href="{{ url_for('descargar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-success btn-sm ml-1">Descargar</a>
                                 </div>
                             </div>
@@ -140,7 +180,7 @@
                                 <img src="{{ url_for('uploaded_file', filename=item.nombre_archivo) }}" class="card-img-top" alt="Imagen Subida">
                                 <hr>
                                 <div class="card-actions">
-                                    <a href="{{ url_for('confirmar_borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-warning btn-sm">Borrar</a>
+                                    <a href="#" class="btn btn-warning btn-sm" onclick="mostrarModal('{{ item.nombre_archivo }}', '{{ url_for('borrar', nombre_archivo=item.nombre_archivo) }}')">Borrar</a>
                                     <a href="{{ url_for('descargar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-success btn-sm ml-1">Descargar</a>
                                 </div>
                             </div>
@@ -166,7 +206,7 @@
                                 <p>Tipo: {{ item.mimetype }}</p>
                                 <hr>
                                 <div class="card-actions">
-                                    <a href="{{ url_for('confirmar_borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-warning btn-sm">Borrar</a>
+                                    <a href="#" class="btn btn-warning btn-sm" onclick="mostrarModal('{{ item.nombre_archivo }}', '{{ url_for('borrar', nombre_archivo=item.nombre_archivo) }}')">Borrar</a>
                                     <a href="{{ url_for('descargar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-success btn-sm ml-1">Descargar</a>
                                 </div>
                             </div>
@@ -194,7 +234,7 @@
                                 </a>
                                 <hr>
                                 <div class="card-actions">
-                                    <a href="{{ url_for('confirmar_borrar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-warning btn-sm">Borrar</a>
+                                    <a href="#" class="btn btn-warning btn-sm" onclick="mostrarModal('{{ item.nombre_archivo }}', '{{ url_for('borrar', nombre_archivo=item.nombre_archivo) }}')">Borrar</a>
                                     <a href="{{ url_for('descargar', nombre_archivo=item.nombre_archivo) }}" class="btn btn-success btn-sm ml-1">Descargar</a>
                                 </div>
                             </div>
@@ -218,9 +258,43 @@
         </div>
         <button type="submit" id="miBoton" class="btn btn-primary">Subir</button>
     </form>
+
+    <div id="confirmarBorrarModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="cerrarModal()">&times;</span>
+            <p>¿Estás seguro de que deseas borrar el archivo: <strong id="nombreArchivoBorrar"></strong>?</p>
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <form method="POST" action="" id="formBorrar">
+                    <button type="submit" class="btn btn-danger">Sí, Borrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
+    var modal = document.getElementById("confirmarBorrarModal");
+    var nombreArchivoBorrar = document.getElementById("nombreArchivoBorrar");
+    var formBorrar = document.getElementById("formBorrar");
+
+    function mostrarModal(nombreArchivo, urlBorrar) {
+        nombreArchivoBorrar.textContent = nombreArchivo;
+        formBorrar.action = urlBorrar;
+        modal.style.display = "block";
+    }
+
+    function cerrarModal() {
+        modal.style.display = "none";
+    }
+
+    // Cerrar el modal si el usuario hace clic fuera de él
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            cerrarModal();
+        }
+    }
+
     function filtrarPorTipo() {
         const tipoFiltro = document.getElementById('tipo_filtro').value;
         const archivosContainer = document.getElementById('archivos-container');
@@ -258,17 +332,5 @@
             }
         });
     }
-
-    // Esta función ya no es necesaria con la nueva lógica de filtrado basada en el texto del título
-    // function getIconClass(tipo) {
-    //     switch (tipo) {
-    //         case 'video': return 'icon-film';
-    //         case 'audio': return 'icon-music';
-    //         case 'imagen': return 'icon-image';
-    //         case 'documento': return 'icon-doc-text-inv';
-    //         case 'pdf': return 'icon-file-pdf';
-    //         default: return '';
-    //     }
-    // }
 </script>
 {% endblock %}

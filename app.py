@@ -1035,7 +1035,6 @@ def reset_password(token):
 
 
 # ADMINISTRADOR DE ARCHIVOS
-
 @app.route('/subir', methods=['POST'])
 @login_required
 def subir():
@@ -1089,41 +1088,21 @@ def archivos():
     print(archivos_con_usuarios) # Para depuración
     return render_template('archivos.html', archivos=archivos_con_usuarios, upload_folder=app.config['UPLOAD_FOLDER'], title=title)
 
-@app.route('/borrar/<nombre_archivo>')
+@app.route('/borrar/<nombre_archivo>', methods=['POST'])
 @login_required
 def borrar(nombre_archivo):
     ruta_archivo = os.path.join(app.config['UPLOAD_FOLDER'], nombre_archivo)
     if os.path.exists(ruta_archivo):
         os.remove(ruta_archivo)
-        flash(f'Archivo "{nombre_archivo}" borrado exitosamente', 'success')
+        flash(f'Archivo borrado exitosamente', 'success')
     else:
         flash(f'No se pudo encontrar el archivo "{nombre_archivo}"', 'danger')
     return redirect(url_for('archivos'))
-
-@app.route('/confirmar_borrar/<nombre_archivo>')
-def confirmar_borrar(nombre_archivo):
-    return render_template('confirmar_borrar.html', nombre_archivo=nombre_archivo)
-
-@app.route('/borrar/<nombre_archivo>')
-def borrar_archivo(nombre_archivo):
-    ruta_archivo = os.path.join(app.config['UPLOAD_FOLDER'], nombre_archivo)
-    if os.path.exists(ruta_archivo):
-        os.remove(ruta_archivo)
-        flash(f'El archivo "{nombre_archivo}" ha sido borrado exitosamente.', 'success')
-    else:
-        flash(f'Error: El archivo "{nombre_archivo}" no se encontró.', 'danger')
-    return redirect(url_for('gestion_archivos')) # Asegúrate de que esta sea tu ruta principal
-
-@app.route('/cancelar_borrar')
-def cancelar_borrar():
-    flash('La acción de borrado ha sido cancelada.', 'info')
-    return redirect(url_for('gestion_archivos')) # Asegúrate de que esta sea tu ruta principal
 
 @app.route('/descargar/<nombre_archivo>')
 @login_required
 def descargar(nombre_archivo):
     return send_from_directory(app.config['UPLOAD_FOLDER'], nombre_archivo, as_attachment=True)
-
 
 # -------------------------------------------------------------------
 # -------------------------------------------------------------------
