@@ -1034,17 +1034,40 @@ def reset_password(token):
 
 
 
-# ADMINISTRADOR DE ARCHIVOS
 @app.route('/subir', methods=['POST'])
 @login_required
 def subir():
-    if 'miArchivo' not in request.files:
+    if 'miArchivo' not in request.files or request.files['miArchivo'].filename == '':
         flash('No se ha seleccionado ningún archivo', 'danger')
-        return redirect(request.url)
+        # Lógica para obtener los archivos y renderizar la plantilla (ESTO ES LO QUE DEBEMOS ELIMINAR DE ESTE BLOQUE)
+        archivos_en_disco = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], f))]
+        archivos_con_usuarios = []
+        for archivo_original in archivos_en_disco:
+            ruta_archivo_original = os.path.join(app.config['UPLOAD_FOLDER'], archivo_original)
+            mime_original = mimetypes.guess_type(ruta_archivo_original)[0]
+            tipo = 'otro'
+            archivo_para_mostrar = archivo_original
+            mimetype_para_mostrar = mime_original
+
+            if mime_original and mime_original.startswith('image/'):
+                tipo = 'imagen'
+            elif mime_original and mime_original.startswith('audio/'):
+                tipo = 'audio'
+            elif mime_original and mime_original.startswith('video/'):
+                tipo = 'video'
+            elif mime_original == 'application/pdf':
+                tipo = 'pdf'
+            elif mime_original and (mime_original.startswith('application/') or mime_original.startswith('text/')):
+                tipo = 'documento'
+
+            archivos_con_usuarios.append({
+                'nombre_archivo': archivo_para_mostrar,
+                'usuario': current_user.id if current_user.is_authenticated else None,
+                'tipo': tipo,
+                'mimetype': mimetype_para_mostrar
+            })
+        return render_template('archivos.html', archivos=archivos_con_usuarios, upload_folder=app.config['UPLOAD_FOLDER'], title="Gestión de Archivos")
     file = request.files['miArchivo']
-    if file.filename == '':
-        flash('No se ha seleccionado ningún archivo', 'danger')
-        return redirect(request.url)
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -1080,7 +1103,7 @@ def archivos():
 
         archivos_con_usuarios.append({
             'nombre_archivo': archivo_para_mostrar,
-            'usuario': current_user.id if current_user.is_authenticated else None, # Ejemplo de asociar usuario
+            'usuario': current_user.id if current_user.is_authenticated else None,
             'tipo': tipo,
             'mimetype': mimetype_para_mostrar
         })

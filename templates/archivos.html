@@ -2,14 +2,24 @@
 {% block title %}Gestión de Archivos{% endblock %}
 {% block content %}
 <style>
-    /* Estilos personalizados para la gestión de archivos */
-    body { padding-top: 56px; } /* Ajuste para la barra de navegación fija si la tienes */
 
     /* Estilo para los contenedores de tipo de archivo */
     .tipo-video, .tipo-audio, .tipo-imagen, .tipo-documento, .tipo-pdf {
         display: flex; /* Activa el flexbox para la disposición horizontal */
         flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea si no caben */
     }
+
+    /* ... tus estilos personalizados para la gestión de archivos ... */
+    .card {
+        box-shadow: none !important;
+    }
+    .btn {
+        box-shadow: none !important;
+    }
+    .modal-content {
+        box-shadow: none !important;
+    }
+    /* Es posible que necesites añadir más selectores si observas sombras en otros elementos */
 
     .tipo-video .col-md-4,
     .tipo-audio .col-md-4,
