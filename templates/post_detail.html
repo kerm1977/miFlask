@@ -8,111 +8,117 @@
         <li><a href="#acciones">Listas</a></li>
     </ul>
 </div>
-
+    
 <div id="contenido" class="tab-content">
+    
     <article class="post-container">
+        <div class="container">
+            <button class="button is-warning mb-5">Apuntarme</button>
+            <section class="post-content row">
 
-
-        <section class="post-content columns">
-            <div class="column is-half">
-
-                <p>{{ post.title }}</p>
-
-                <p>{{ post.content }}</p>
-
-                {% if post.precio_colones %}
-                   <strong>Precio:</strong> ¢{{ post.precio_colones}}
-                {% endif %}
-
-                {% if post.image %}
-                    <figure class="image">
-                        <img src="{{ url_for('static', filename='images/' + post.image) }}" alt="{{ post.title }}">
-                    </figure>
-                {% endif %}
-            </div>
-            <div class="column is-half">
-                <ul class="list is-unordered">
-                    {% if post.fecha_salida %}
-                        <li><strong>Fecha de Salida:</strong> {{ post.fecha_salida.strftime('%d de %B de %Y') }}</li>
-                    {% endif %}
-                    {% if post.hora_salida %}
-                        <li><strong>Hora de Salida:</strong> {{ post.hora_salida.strftime('%H:%M') }}</li>
-                    {% endif %}
-                    {% if post.lugar_salida %}
-                        <li><strong>Lugar de Salida:</strong> {{ post.lugar_salida }}</li>
-                    {% endif %}
-                     
-                        {% if post.recogemos_en %}
-                           <strong>Puntos de Recogida:</strong>
-                            <li>{{ post.recogemos_en | replace('\n', '<br>') | safe }}</li>
-                            
+                <div class="col-md-8">
+                    <div style="position: relative;">
+                     {% if post.image %}
+                            <figure class="image">
+                                <img src="{{ url_for('static', filename='images/' + post.image) }}" alt="{{ post.title }}">
+                            </figure>
                         {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <ul class="list is-unordered">
+                        <p>{{ post.title }}</p>
+                        <p>{{ post.content }}</p>
+                        {% if post.precio_colones %}
+                            <strong>Precio:</strong> ¢{{ post.precio_colones}}
+                        {% endif %}
+                        {% if post.fecha_salida %}
+                            <li><strong>Fecha de Salida:</strong> {{ post.fecha_salida.strftime('%d de %B de %Y') }}</li>
+                        {% endif %}
+                        {% if post.hora_salida %}
+                            <li><strong>Hora de Salida:</strong> {{ post.hora_salida.strftime('%H:%M') }}</li>
+                        {% endif %}
+                        {% if post.lugar_salida %}
+                            <li><strong>Lugar de Salida:</strong> {{ post.lugar_salida }}</li>
+                        {% endif %}
+
+                        <br>
+                        {% if post.recogemos_en %}
+                            <strong>Puntos de Recogida:</strong>
+                            <li>{{ post.recogemos_en | replace('\n', '<br>') | safe }}</li>
+                            <br>
+                        {% endif %}
+
+
                         {% if post.tipoTerreno %}
                             <li><strong>Tipo de Terreno:</strong>
-                            {{ post.tipoTerreno | replace('\n', '<br>') | safe }}</li>
+                                {{ post.tipoTerreno | replace('\n', '<br>') | safe }}</li>
                         {% endif %}
-                 
-                    {% if post.dificultad %}
-                        <li><strong>Dificultad:</strong> {{ post.dificultad }}</li>
-                    {% endif %}
-                    {% if post.distancia %}
-                        <li><strong>Distancia:</strong> {{ post.distancia }} km</li>
-                    {% endif %}
-                    {% if post.capacidad_total %}
-                        <li><strong>Capacidad Total:</strong> {{ post.capacidad_total }} personas</li>
-                    {% endif %}
-                    {% if post.capacidad_buseta %}
-                        <li><strong>Capacidad Buseta:</strong> {{ post.capacidad_buseta }} personas</li>
-                    {% endif %}
-                    {% if post.requiere_estadía %}
-                        <li><strong>Requiere Estadía:</strong> {{ post.requiere_estadía }}</li>
-                    {% endif %}
-                    {% if post.animales %}
-                        <li><strong>Animales:</strong> {{ post.animales }}</li>
-                    {% endif %}
-                    {% if post.duchas %}
-                        <li><strong>Duchas:</strong> {{ post.duchas }}</li>
-                    {% endif %}
-                    {% if post.banos %}
-                        <li><strong>Baños:</strong> {{ post.banos }}</li>
-                    {% endif %}
-                    {% if post.bastones %}
-                        <li><strong>Bastones:</strong> {{ post.bastones }}</li>
-                    {% endif %}
-                    {% if post.guantes %}
-                        <li><strong>Guantes:</strong> {{ post.guantes }}</li>
-                    {% endif %}
-                    {% if post.tipo_calzado %}
-                        <li><strong>Tipo de Calzado:</strong> {{ post.tipo_calzado }}</li>
-                    {% endif %}
-                    {% if post.repelente %}
-                        <li><strong>Repelente:</strong> {{ post.repelente }}</li>
-                    {% endif %}
-                    {% if post.bloqueador %}
-                        <li><strong>Bloqueador:</strong> {{ post.bloqueador }}</li>
-                    {% endif %}
-                    {% if post.liquido %}
-                        <li><strong>Líquido:</strong> {{ post.liquido }}</li>
-                    {% endif %}
-                    {% if post.snacks %}
-                        <li><strong>Snacks:</strong> {{ post.snacks }}</li>
-                    {% endif %}
-                    {% if post.ropa_cambio %}
-                        <li><strong>Ropa de Cambio:</strong> {{ post.ropa_cambio }}</li>
-                    {% endif %}
-                    {% if current_user.is_authenticated and current_user.id == post.user_id %}
+                        {% if post.dificultad %}
+                            <li><strong>Dificultad:</strong> {{ post.dificultad }}</li>
+                        {% endif %}
+                        {% if post.distancia %}
+                            <li><strong>Distancia:</strong> {{ post.distancia }} km</li>
+                        {% endif %}
+                        {% if post.capacidad_total %}
+                            <li><strong>Capacidad Total:</strong> {{ post.capacidad_total }} personas</li>
+                        {% endif %}
+                        {% if post.capacidad_buseta %}
+                            <li><strong>Capacidad Buseta:</strong> {{ post.capacidad_buseta }} personas</li>
+                        {% endif %}
+                        {% if post.requiere_estadía %}
+                            <li><strong>Requiere Estadía:</strong> {{ post.requiere_estadía }}</li>
+                        {% endif %}
+                        {% if post.animales %}
+                            <li><strong>Animales:</strong> {{ post.animales }}</li>
+                        {% endif %}
+                        {% if post.duchas %}
+                            <li><strong>Duchas:</strong> {{ post.duchas }}</li>
+                        {% endif %}
+                        {% if post.banos %}
+                            <li><strong>Baños:</strong> {{ post.banos }}</li>
+                        {% endif %}
+                        {% if post.bastones %}
+                            <li><strong>Bastones:</strong> {{ post.bastones }}</li>
+                        {% endif %}
+                        {% if post.guantes %}
+                            <li><strong>Guantes:</strong> {{ post.guantes }}</li>
+                        {% endif %}
+                        {% if post.tipo_calzado %}
+                            <li><strong>Tipo de Calzado:</strong> {{ post.tipo_calzado }}</li>
+                        {% endif %}
+                        {% if post.repelente %}
+                            <li><strong>Repelente:</strong> {{ post.repelente }}</li>
+                        {% endif %}
+                        {% if post.bloqueador %}
+                            <li><strong>Bloqueador:</strong> {{ post.bloqueador }}</li>
+                        {% endif %}
+                        {% if post.liquido %}
+                            <li><strong>Líquido:</strong> {{ post.liquido }}</li>
+                        {% endif %}
+                        {% if post.snacks %}
+                            <li><strong>Snacks:</strong> {{ post.snacks }}</li>
+                        {% endif %}
+                        {% if post.ropa_cambio %}
+                            <li><strong>Ropa de Cambio:</strong> {{ post.ropa_cambio }}</li>
+                        {% endif %}
+                        {% if current_user.is_authenticated and current_user.id == post.user_id %}
+                            <li>
+                                <section class="post-actions">
+                                    <a href="{{ url_for('edit_post', post_id=post.id) }}" class="button is-primary">Editar</a>
+                                    <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="button is-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar esta publicación?')">Borrar</button>
+                                    </form>
+                                </section>
+                            </li>
+                        {% endif %}
                         <li>
-                            <section class="post-actions">
-                                <a href="{{ url_for('edit_post', post_id=post.id) }}" class="button is-primary">Editar</a>
-                                <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST" style="display: inline;">
-                                    <button type="submit" class="button is-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar esta publicación?')">Borrar</button>
-                                </form>
-                            </section>
+                            <button class="button is-warning is-fullwidth">Apuntarme</button>
                         </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </section>
+                    </ul>
+                </div>
+            </section>
+        </div>
     </article>
 </div>
 
@@ -149,40 +155,20 @@
         </header>
         <section class="post-content">
             <p>Aquí van las listas relacionadas con la caminata.</p>
-            </section>
+        </section>
     </article>
 </div>
 
 <style>
+    /* Mantén tus estilos personalizados */
     .post-container {
-        max-width: 900px; /* Aumentar el ancho máximo para acomodar la lista */
+        max-width: 1200px;
         margin: 20px auto;
         padding: 20px;
         border: none;
         border-radius: 0;
         background-color: transparent;
         box-shadow: none;
-    }
-
-    .post-content.columns {
-        display: flex; /* Usar flexbox para alinear imagen y lista */
-        flex-wrap: wrap; /* Permitir que las columnas se envuelvan en pantallas pequeñas */
-    }
-
-    .post-content .column.is-half {
-        flex: 1; /* Cada columna ocupa la misma proporción de espacio */
-        min-width: 300px; /* Ancho mínimo para evitar que se colapsen */
-        padding: 10px;
-    }
-
-    .post-image {
-        max-width: 100%;
-        height: auto;
-        margin-top: 10px;
-    }
-
-    .post-actions {
-        margin-top: 20px;
     }
 
     .tabs {
@@ -208,16 +194,27 @@
 
     .list.is-unordered li {
         padding: 5px 0;
-        border-bottom: 1px solid #eee; /* Separador visual entre elementos */
+        border-bottom: 1px solid #eee;
     }
 
     .list.is-unordered li:last-child {
-        border-bottom: none; /* No mostrar separador en el último elemento */
+        border-bottom: none;
     }
 
     .list.is-unordered strong {
         font-weight: bold;
         margin-right: 0.5em;
+    }
+
+    .image {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .post-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px; /* Espacio entre los botones */
     }
 </style>
 

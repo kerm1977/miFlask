@@ -2,7 +2,7 @@
 {% block content %}
 
 <style>
-    /* Estilos de íconos (icomoon) */
+    /* Existing styles (icomoon, general, etc.) - KEEP THESE */
     @font-face {
         font-family: 'icomoon';
         src: url('{{ url_for('static', filename='fonts/icomoon.eot?d9jn37') }}');
@@ -35,7 +35,6 @@
         content: "\ea90";
     }
 
-    /* Estilos generales */
     .section {
         padding: 3rem 1.5rem;
     }
@@ -51,7 +50,10 @@
     }
 
     .card-content {
-        padding: 1.5rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1; /* Allow content to grow and push footer down */
     }
 
     .image img {
@@ -62,80 +64,84 @@
     }
 
     .title.is-4 {
-        color: #007bff;
-        margin-top: 1rem;
-        text-align: center;
+        margin-top: 0.5rem;
+        color: #333;
+        text-align: left;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .share-icons {
+        margin-top: 0.5rem;
+        justify-content: flex-start; /* Align share icons to the left */
+    }
+
+    .share-icons hr {
+        display: none; /* Hide the horizontal rule inside the card */
+    }
+
+    .share-icons a {
+        margin-right: 0.75rem;
+        margin-left: 0;
+    }
+
+    .post-actions {
+        /* Remove existing styling for post-actions */
+        margin-top: auto; /* Push actions to the bottom */
+        display: flex;
+        justify-content: space-between; /* Space out the buttons */
+        padding-top: 1rem; /* Add some space above the buttons */
+        border-top: 1px solid #eee; /* Add a separator line */
+    }
+
+    .post-actions a.btn,
+    .post-actions button.btn {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .stylized-card {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column; /* Arrange content vertically */
+        height: 100%; /* Make the card take full height of the column */
+    }
+
+    .stylized-card .image {
+        flex-shrink: 0; /* Prevent image from shrinking */
+    }
+
+    .stylized-card .card-content {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1; /* Allow content to grow */
+    }
+
+    .stylized-card .card-footer {
+        background-color: #eee;
+        padding: 0.75rem;
+        border-top: 1px solid #ddd;
+        border-radius: 0 0 8px 8px;
+        display: flex;
+        justify-content: space-between; /* Align footer items */
+    }
+
+    .stylized-card .card-footer a {
+        color: #555;
         text-decoration: none;
         transition: color 0.3s ease;
     }
 
-    .title.is-4:hover {
-        color: #0056b3;
+    .stylized-card .card-footer a:first-child {
+        margin-right: auto; /* Push the first link to the left */
     }
 
-    .share-icons {
-        display: flex;
-        justify-content: center;
-        margin-top: 1rem;
-    }
-
-    .share-icons a {
-        margin: 0 0.5rem;
-        color: #007bff;
-        transition: color 0.3s ease;
-    }
-
-    .share-icons a:hover {
-        color: #0056b3;
-    }
-
-    .post-actions {
-        display: flex;
-        justify-content: space-around;
-        margin-top: 1rem;
-    }
-
-    .button {
-        border-radius: 5px;
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
-
-    .pagination {
-        margin-top: 2rem;
-    }
-
-    .pagination-link {
-        border-radius: 5px;
-        margin: 0 0.25rem;
-    }
-
-    .pagination-link.is-current {
-        background-color: #007bff;
-        color: white;
-    }
-
-    .pagination-ellipsis {
-        margin: 0 0.25rem;
-    }
-
-    .icon-whatsapp {
-        color: #25D366;
-    }
-
-    .icon-facebook {
-        color: #1877F2;
-    }
-
-    /* Separador entre posts (opcional, mejorado) */
-    .post-card-container {
-        border-bottom: 1px solid #ddd;
-        padding-bottom: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .post-card-container:last-child {
-        border-bottom: none; /* Sin separador en el último */
+    .stylized-card .card-footer a:last-child {
+        margin-left: auto; /* Push the last link to the right */
     }
 </style>
 
@@ -148,31 +154,24 @@
         <div class="columns is-multiline">
             {% for post in posts_pagination.items %}
                 <div class="column is-3-desktop is-4-tablet post-card-container">
-                    <div class="card-content">
-                        <a href="{{ url_for('post', post_id=post.id) }}">
-                            <figure class="image">
-                                {% if post.image %}
-                                    <img src="{{ url_for('static', filename='images/' + post.image) }}" alt="{{ post.title }}">
-                                {% else %}
-                                    <img src="{{ url_for('static', filename='images/image_not_available.png') }}" alt="Imagen no disponible">
-                                {% endif %}
-                            </figure>
-                            <h2 class="title is-4">{{ post.title }}</h2>
+                    <div class="stylized-card">
+                        <a href="{{ url_for('post', post_id=post.id) }}" class="image">
+                            {% if post.image %}
+                                <img src="{{ url_for('static', filename='images/' + post.image) }}" alt="{{ post.title }}">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/image_not_available.png') }}" alt="Imagen no disponible">
+                            {% endif %}
                         </a>
-                        {% if post.precio_colones %}
-                            <strong>Precio:</strong> ¢{{ post.precio_colones}}
-                        {% endif %}
+                        <div class="card-content">
+                            <a href="{{ url_for('post', post_id=post.id) }}">
+                                <h2 class="title is-4">{{ post.title }}</h2>
+                            </a>
+                            {% if post.precio_colones %}
+                                <p><strong>Precio:</strong> ¢{{ post.precio_colones}}</p>
+                            {% endif %}
 
-                        <div class="share-icons">
-                            <hr>
-                            <a href="https://api.whatsapp.com/send?text={{ url_for('post', post_id=post.id, _external=true) }}" target="_blank">
-                                <span class="icon icon-whatsapp"></span>
-                            </a>
-                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ url_for('post', post_id=post.id, _external=true) }}" target="_blank">
-                                <span class="icon icon-facebook"></span>
-                            </a>
+                            
                         </div>
-
                         {% if current_user.is_authenticated and (current_user.email == "kenth1977@gmail.com" or current_user.email == "jceciliano69@gmail.com") %}
                             <div class="post-actions">
                                 <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-primary btn-sm" title="Editar">Editar</a>
@@ -181,8 +180,22 @@
                                 </form>
                             </div>
                         {% endif %}
-                    </div>
-                </div>
+
+                        <div class="card-footer">
+                            <div class="share-icons ">
+                                <hr>
+                                <a href="https://api.whatsapp.com/send?text={{ url_for('post', post_id=post.id, _external=true) }}" target="_blank">
+                                    <span class="icon icon-whatsapp"></span>
+                                </a>
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ url_for('post', post_id=post.id, _external=true) }}" target="_blank">
+                                    <span class="icon icon-facebook"></span>
+                                </a>
+                                <a class="ms-5" href="{{ url_for('post', post_id=post.id) }}">Ver más</a>
+                            </div>
+                        </div>
+                            
+                            </div>
+                        </div>
             {% endfor %}
         </div>
 
