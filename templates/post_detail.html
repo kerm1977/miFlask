@@ -8,17 +8,16 @@
         <li><a href="#acciones">Listas</a></li>
     </ul>
 </div>
-    
+
 <div id="contenido" class="tab-content">
-    
     <article class="post-container">
         <div class="container">
-            <button class="button is-warning mb-5">Apuntarme</button>
+            <button class="button is-warning mb-5 apuntarme-button" data-post-id="{{ post.id }}">Apuntarme</button>
             <section class="post-content row">
 
                 <div class="col-md-8">
                     <div style="position: relative;">
-                     {% if post.image %}
+                        {% if post.image %}
                             <figure class="image">
                                 <img src="{{ url_for('static', filename='images/' + post.image) }}" alt="{{ post.title }}">
                             </figure>
@@ -113,7 +112,7 @@
                             </li>
                         {% endif %}
                         <li>
-                            <button class="button is-warning is-fullwidth">Apuntarme</button>
+                            <button class="button is-warning is-fullwidth apuntarme-button" data-post-id="{{ post.id }}">Apuntarme</button>
                         </li>
                     </ul>
                 </div>
@@ -152,6 +151,8 @@
     <article class="post-container">
         <header>
             <h2 class="subtitle">Listas</h2>
+            <ul id="lista-participantes" class="list is-unordered">
+            </ul>
         </header>
         <section class="post-content">
             <p>Aquí van las listas relacionadas con la caminata.</p>
@@ -195,6 +196,9 @@
     .list.is-unordered li {
         padding: 5px 0;
         border-bottom: 1px solid #eee;
+        display: flex; /* Para alinear los botones */
+        justify-content: space-between; /* Espacio entre el texto y el botón */
+        align-items: center; /* Centrar verticalmente */
     }
 
     .list.is-unordered li:last-child {
@@ -216,12 +220,29 @@
         display: flex;
         gap: 10px; /* Espacio entre los botones */
     }
+
+    .eliminar-participante-button {
+        background-color: #dc3545; /* Rojo */
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        margin-left: 10px; /* Separación del texto */
+    }
+
+    .eliminar-participante-button:hover {
+        background-color: #c82333; /* Rojo más oscuro */
+    }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const tabs = document.querySelectorAll('.tabs a');
         const tabContents = document.querySelectorAll('.tab-content');
+        const apuntarmeButtons = document.querySelectorAll('.apuntarme-button');
+        const listaParticipantes = document.getElementById('lista-participantes');
 
         const activateTab = (tabId) => {
             tabs.forEach(tab => {
@@ -250,6 +271,99 @@
                 activateTab(targetId);
             });
         });
+
+        apuntarmeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Verificar si el usuario está autenticado
+                {% if current_user.is_authenticated %}
+                    // Agregar el nombre, apellidos y teléfono del usuario a la lista
+                    const nombre = "{{ current_user.name }}";
+                    const apellido1 = "{{ current_user.first_last_name }}";
+                    const apellido2 = "{{ current_user.second_last_name }}";
+                    const telefono = "{{ current_user.phone_number }}";  // Asegúrate de que este campo existe
+                    const participante = `${nombre} ${apellido1} ${apellido2} - Teléfono: ${telefono}`;
+                    const postId = button.dataset.postId; // Obtener el ID del post
+
+                    // Usar el ID del post como parte de la clave de localStorage
+                    const storageKey = `participantes_post_${postId}`;
+                    let participantesGuardados = localStorage.getItem(storageKey);
+
+                    if (participantesGuardados) {
+                        participantesGuardados = JSON.parse(participantesGuardados);
+                    } else {
+                        participantesGuardados = [];
+                    }
+
+                    // Solo agrega el participante si no existe ya en la lista
+                    let participanteExistente = false;
+                    for (let i = 0; i < participantesGuardados.length; i++) {
+                        if (participantesGuardados[i] === participante) {
+                            participanteExistente = true;
+                            break;
+                        }
+                    }
+
+                    if (!participanteExistente) {
+                        const nuevoParticipante = document.createElement('li');
+                        nuevoParticipante.textContent = participante;
+
+                        // Botón para eliminar participante
+                        const botonEliminar = document.createElement('button');
+                        botonEliminar.textContent = 'Borrar';
+                        botonEliminar.className = 'eliminar-participante-button';
+                        botonEliminar.addEventListener('click', (event) => {
+                            event.stopPropagation(); // Evita que se dispare el evento del li
+                            // Eliminar el participante de la lista y de localStorage
+                            nuevoParticipante.remove();
+                            participantesGuardados = participantesGuardados.filter(p => p !== participante);
+                            localStorage.setItem(storageKey, JSON.stringify(participantesGuardados));
+                        });
+
+                        nuevoParticipante.appendChild(botonEliminar);
+                        listaParticipantes.appendChild(nuevoParticipante);
+                        activateTab('acciones'); // Cambiar a la pestaña de Listas
+
+                        // Guardar el participante en localStorage
+                        participantesGuardados.push(participante);
+                        localStorage.setItem(storageKey, JSON.stringify(participantesGuardados));
+                    } else {
+                        alert('Ya te has apuntado a esta caminata.');
+                    }
+
+                {% else %}
+                    alert('Debes iniciar sesión para apuntarte a la caminata.');
+                    // Puedes redirigir al usuario a la página de inicio de sesión si lo deseas
+                    // window.location.href = "{{ url_for('login') }}";
+                {% endif %}
+            });
+        });
+
+        // Cargar la lista de participantes para el post actual desde localStorage
+        const postId = "{{ post.id }}"; // Obtener el ID del post actual en la plantilla
+        const storageKey = `participantes_post_${postId}`;
+        let participantesGuardados = localStorage.getItem(storageKey);
+        if (participantesGuardados) {
+            participantesGuardados = JSON.parse(participantesGuardados);
+            participantesGuardados.forEach(participante => {
+                const nuevoParticipante = document.createElement('li');
+                nuevoParticipante.textContent = participante;
+
+                // Botón para eliminar participante
+                const botonEliminar = document.createElement('button');
+                botonEliminar.textContent = 'Borrar';
+                botonEliminar.className = 'eliminar-participante-button';
+                botonEliminar.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Evita que se dispare el evento del li
+                    // Eliminar el participante de la lista y de localStorage
+                    nuevoParticipante.remove();
+                    participantesGuardados = participantesGuardados.filter(p => p !== participante);
+                    localStorage.setItem(storageKey, JSON.stringify(participantesGuardados));
+                });
+
+                nuevoParticipante.appendChild(botonEliminar);
+                listaParticipantes.appendChild(nuevoParticipante);
+            });
+        }
     });
 </script>
 {%endblock%}
