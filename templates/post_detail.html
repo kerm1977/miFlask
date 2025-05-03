@@ -101,7 +101,7 @@
                         {% if post.ropa_cambio %}
                             <li><strong>Ropa de Cambio:</strong> {{ post.ropa_cambio }}</li>
                         {% endif %}
-                        {% if current_user.is_authenticated and current_user.id == post.user_id %}
+                        {% if current_user.is_authenticated and (current_user.email == 'kenth1977@gmail.com' or current_user.email == 'jceciliano69@gmail.com') %}
                             <li>
                                 <section class="post-actions">
                                     <a href="{{ url_for('edit_post', post_id=post.id) }}" class="button is-primary">Editar</a>
@@ -235,6 +235,21 @@
     .eliminar-participante-button:hover {
         background-color: #c82333; /* Rojo más oscuro */
     }
+    .whatsapp-button {
+        background-color: #25d366; /* Color de WhatsApp */
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        margin-left: 10px; /* Separación del texto */
+    }
+
+    .whatsapp-button:hover {
+        background-color: #128c7e; /* Color más oscuro de WhatsApp */
+    }
+
 </style>
 
 <script>
@@ -311,15 +326,33 @@
                         const botonEliminar = document.createElement('button');
                         botonEliminar.textContent = 'Borrar';
                         botonEliminar.className = 'eliminar-participante-button';
-                        botonEliminar.addEventListener('click', (event) => {
-                            event.stopPropagation(); // Evita que se dispare el evento del li
-                            // Eliminar el participante de la lista y de localStorage
-                            nuevoParticipante.remove();
-                            participantesGuardados = participantesGuardados.filter(p => p !== participante);
-                            localStorage.setItem(storageKey, JSON.stringify(participantesGuardados));
-                        });
+                        // Solo mostrar el botón de eliminar si el usuario logueado es kenth1977 o jceciliano69
+                        if ("{{ current_user.email }}" === "kenth1977@gmail.com" || "{{ current_user.email }}" === "jceciliano69@gmail.com") {
+                            botonEliminar.addEventListener('click', (event) => {
+                                event.stopPropagation(); // Evita que se dispare el evento del li
+                                // Eliminar el participante de la lista y de localStorage
+                                nuevoParticipante.remove();
+                                participantesGuardados = participantesGuardados.filter(p => p !== participante);
+                                localStorage.setItem(storageKey, JSON.stringify(participantesGuardados));
+                            });
+                            nuevoParticipante.appendChild(botonEliminar);
+                        }
 
-                        nuevoParticipante.appendChild(botonEliminar);
+                        // Botón de WhatsApp
+                        const botonWhatsApp = document.createElement('button');
+                        botonWhatsApp.textContent = 'WhatsApp';
+                        botonWhatsApp.className = 'whatsapp-button';
+                        botonWhatsApp.addEventListener('click', (event) => {
+                            event.stopPropagation(); // Evita que se dispare el evento del li
+                            // Formatear el número de teléfono para el enlace de WhatsApp
+                            const numeroWhatsApp = telefono.replace(/[-()_\s]/g, ''); // Elimina caracteres no deseados
+                            const mensaje = `Hola, te contacto por la caminata: ${"{{ post.title }}"}`; //Personaliza el mensaje
+                            const enlaceWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+                            window.open(enlaceWhatsApp, '_blank'); // Abre en una nueva pestaña
+                        });
+                        nuevoParticipante.appendChild(botonWhatsApp);
+
+
                         listaParticipantes.appendChild(nuevoParticipante);
                         activateTab('acciones'); // Cambiar a la pestaña de Listas
 
@@ -352,15 +385,35 @@
                 const botonEliminar = document.createElement('button');
                 botonEliminar.textContent = 'Borrar';
                 botonEliminar.className = 'eliminar-participante-button';
-                botonEliminar.addEventListener('click', (event) => {
-                    event.stopPropagation(); // Evita que se dispare el evento del li
-                    // Eliminar el participante de la lista y de localStorage
-                    nuevoParticipante.remove();
-                    participantesGuardados = participantesGuardados.filter(p => p !== participante);
-                    localStorage.setItem(storageKey, JSON.stringify(participantesGuardados));
-                });
+                 // Solo mostrar el botón de eliminar si el usuario logueado es kenth1977 o jceciliano69
+                if ("{{ current_user.email }}" === "kenth1977@gmail.com" || "{{ current_user.email }}" === "jceciliano69@gmail.com") {
+                    botonEliminar.addEventListener('click', (event) => {
+                        event.stopPropagation(); // Evita que se dispare el evento del li
+                        // Eliminar el participante de la lista y de localStorage
+                        nuevoParticipante.remove();
+                        participantesGuardados = participantesGuardados.filter(p => p !== participante);
+                        localStorage.setItem(storageKey, JSON.stringify(participantesGuardados));
+                    });
+                    nuevoParticipante.appendChild(botonEliminar);
+                }
 
-                nuevoParticipante.appendChild(botonEliminar);
+                // Botón de WhatsApp
+                const botonWhatsApp = document.createElement('button');
+                botonWhatsApp.textContent = 'WhatsApp';
+                botonWhatsApp.className = 'whatsapp-button';
+                botonWhatsApp.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Evita que se dispare el evento del li
+                    // Separa el nombre y el teléfono
+                    const partes = participante.split(' - Teléfono: ');
+                    const telefono = partes[1];
+                    const mensaje = `Hola, te contacto por la caminata: ${"{{ post.title }}"}`; // Mensaje
+                    // Formatea el número para el enlace
+                    const numeroWhatsApp = telefono.replace(/[-()_\s]/g, '');
+                    const enlaceWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+                    window.open(enlaceWhatsApp, '_blank'); // Abre en nueva pestaña
+                });
+                nuevoParticipante.appendChild(botonWhatsApp);
+
                 listaParticipantes.appendChild(nuevoParticipante);
             });
         }

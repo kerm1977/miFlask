@@ -1,5 +1,5 @@
 # IMPORTS
-from flask import Flask, render_template, request, redirect, url_for, flash, session  # Agrega 'session' aquí  # Importa las funciones necesarias de Flask (Todas las rutas y render_template dependen de esto)
+from flask import Flask, render_template, request, redirect, url_for, flash, session,Blueprint  # Agrega 'session' aquí  # Importa las funciones necesarias de Flask (Todas las rutas y render_template dependen de esto)
 from flask_migrate import Migrate  # Importa Migrate para manejar migraciones de la base de datos (Depende de db y app)
 from werkzeug.security import generate_password_hash, check_password_hash # Importa funciones para manejar contraseñas seguras (Depende de la clase User)
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user # Importa funciones para manejar la autenticación de usuarios (Depende de la clase User y app)
@@ -15,7 +15,6 @@ from wtforms.validators import DataRequired
 import requests
 import secrets #videos
 import math
-import secrets
 from flask import send_from_directory #Permite ver la imagen en los users
 # from recuperacion_contraseña import crear_modulo_recuperacion_contraseña # Importacion del modulo.
 from urllib.parse import urlparse
@@ -35,10 +34,10 @@ import mimetypes
 # recuperacion_contraseña forgot_password
 import smtplib
 from email.mime.text import MIMEText
-
-
 # CONFIG BASE DE DATOS
 app = Flask(__name__)  # Crea una instancia de la aplicación Flask (Todas las rutas y configuraciones dependen de esto)
+db = SQLAlchemy()
+
 
 
 # pip install pysqlite3 --user
@@ -82,9 +81,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
-
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -96,9 +92,10 @@ class User(UserMixin, db.Model):
     avatar = db.Column(db.String(200))
     registration_count = db.Column(db.Integer, default=0)
     posts = db.relationship('Post', backref='author', lazy=True)
-    reset_token = db.Column(db.String(100), nullable=True)  # Añadido
-    reset_token_expiration = db.Column(db.DateTime, nullable=True)  # Añadido
+    reset_token = db.Column(db.String(100), nullable=True)   # Añadido
+    reset_token_expiration = db.Column(db.DateTime, nullable=True)   # Añadido
     nombre_archivo = db.Column(db.String(255))
+    participaciones = db.relationship('Participacion', backref='usuario', lazy=True) # Añadido
 
     # RECUPERADOR DE CONTRASEÑAS
     def set_password(self, password):
@@ -107,18 +104,18 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-# RECUPERACION DE CONTRASEÑA EN CASO DE QUE NO FUNCIONE BORRAR
-# RECUPERACION DE CONTRASEÑA EN CASO DE QUE NO FUNCIONE BORRAR
-    def generate_reset_token(self):  # Añadido
+    # RECUPERACION DE CONTRASEÑA EN CASO DE QUE NO FUNCIONE BORRAR
+    # RECUPERACION DE CONTRASEÑA EN CASO DE QUE NO FUNCIONE BORRAR
+    def generate_reset_token(self):   # Añadido
         self.reset_token = secrets.token_urlsafe(16)
         self.reset_token_expiration = datetime.utcnow() + timedelta(hours=1)
         db.session.commit()
         return self.reset_token
 
-    def reset_token_is_valid(self):  # Añadido
+    def reset_token_is_valid(self):   # Añadido
         return self.reset_token_expiration and self.reset_token_expiration > datetime.utcnow()
 
-    def reset_password(self, password):  # Añadido
+    def reset_password(self, password):   # Añadido
         self.set_password(password)
         self.reset_token = None
         self.reset_token_expiration = None
@@ -155,6 +152,15 @@ class Post(db.Model):
     snacks = db.Column(db.String(10), nullable=True)
     ropa_cambio = db.Column(db.String(10), nullable=True)
     precio_colones = db.Column(db.Float, nullable=True) # Nuevo campo para el precio en colones
+    participaciones = db.relationship('Participacion', backref='post', lazy=True) # Añadido
+
+class Participacion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # Cambiado a 'user.id'
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    fecha_inscripcion = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('usuario_id', 'post_id', name='unique_participation'),)
 
 class Contacto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -191,8 +197,6 @@ class Video(db.Model):
     detail = db.Column(db.Text)
     video_url = db.Column(db.String(200))
     image_url = db.Column(db.String(200))  # Nuevo campo para la URL de la imagen
-
-
 
 
 
@@ -296,11 +300,50 @@ def borrar_tarea(tarea_id):
 
 
 # VER IMAGENES Y POSTS
+# APUNTARME Y DESAPUNTARME
+main = Blueprint('main', __name__) # Asumiendo que tienes un Blueprint llamado 'main'
+
+
 @app.route('/post/<int:post_id>')
 def post(post_id):
-    title = "Caminatas"
     post = Post.query.get_or_404(post_id)
-    return render_template('post_detail.html', post=post, title=title)
+    participantes = Participacion.query.filter_by(post_id=post_id).all()
+    return render_template('post_detail.html', post=post, participantes=participantes)
+ 
+
+
+
+@main.route('/apuntarme/<int:post_id>', methods=['POST'])
+@login_required
+def apuntarme(post_id):
+    post = Post.query.get_or_404(post_id)
+    existing_participation = Participacion.query.filter_by(usuario_id=current_user.id, post_id=post_id).first()
+
+    if existing_participation:
+        flash('Ya estás apuntado a esta caminata.', 'warning')
+    else:
+        participacion = Participacion(usuario_id=current_user.id, post_id=post_id)
+        db.session.add(participacion)
+        db.session.commit()
+        flash('Te has apuntado a la caminata.', 'success')
+
+    return redirect(url_for('main.post', post_id=post_id))
+
+@main.route('/desapuntarme/<int:participacion_id>', methods=['POST'])
+@login_required
+def desapuntarme(participacion_id):
+    participacion = Participacion.query.get_or_404(participacion_id)
+    if participacion.usuario_id == current_user.id:
+        db.session.delete(participacion)
+        db.session.commit()
+        flash('Te has desapuntado de la caminata.', 'info')
+    else:
+        flash('No tienes permiso para desapuntarte de esta persona.', 'danger')
+    return redirect(url_for('main.post', post_id=participacion.post_id))
+# APUNTARME Y DESAPUNTARME
+
+
+
 
 @app.route('/new', methods=['GET', 'POST'])
 @login_required
